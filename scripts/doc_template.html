@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MISRA Guidelines Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f5f7fa; --surface:#ffffff; --surface-2:#eef1f6;
+    --ink:#141821; --muted:#5b6472; --faint:#8a93a3;
+    --border:#e0e5ec; --border-strong:#cdd4de;
+    --accent:#c8760a; --accent-ink:#94560a; --accent-soft:#fbeed8;
+    --good:#0f8a7e; --good-soft:#e0f2ef; --bad:#c0392b;
+    --code-bg:#141821; --code-ink:#e7ebf2; --code-faint:#7f8a9c; --code-kw:#f0a13c;
+    --shadow:0 1px 2px rgba(20,24,33,.04),0 8px 24px rgba(20,24,33,.06);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1017; --surface:#141924; --surface-2:#1b2130;
+      --ink:#e7ebf2; --muted:#9aa4b5; --faint:#6b7688;
+      --border:#242c3a; --border-strong:#313a4b;
+      --accent:#f0a13c; --accent-ink:#f6bd6f; --accent-soft:#2a2013;
+      --good:#3fb8a9; --good-soft:#12241f; --bad:#e8776b;
+      --code-bg:#0a0d13; --code-ink:#e7ebf2; --code-faint:#6b7688; --code-kw:#f0a13c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+      --bg:#0d1017; --surface:#141924; --surface-2:#1b2130;
+      --ink:#e7ebf2; --muted:#9aa4b5; --faint:#6b7688;
+      --border:#242c3a; --border-strong:#313a4b;
+      --accent:#f0a13c; --accent-ink:#f6bd6f; --accent-soft:#2a2013;
+      --good:#3fb8a9; --good-soft:#12241f; --bad:#e8776b;
+      --code-bg:#0a0d13; --code-ink:#e7ebf2; --code-faint:#6b7688; --code-kw:#f0a13c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:15.5px; line-height:1.62; letter-spacing:-.003em;
+  }
+  .wrap{max-width:900px; margin:0 auto; padding:0 26px}
+  code,pre,.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  a{color:var(--accent-ink); text-decoration:underline; text-underline-offset:2px}
+
+  /* Cover */
+  .cover{padding:72px 0 44px; border-bottom:2px solid var(--accent)}
+  .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:600;
+    letter-spacing:.13em; text-transform:uppercase; color:var(--accent-ink);
+    background:var(--accent-soft); padding:6px 13px; border-radius:100px; margin-bottom:24px}
+  .eyebrow::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--accent)}
+  .cover h1{font-size:clamp(32px,6vw,52px); line-height:1.04; font-weight:700;
+    letter-spacing:-.025em; margin:0 0 14px; text-wrap:balance}
+  .cover p{font-size:18px; color:var(--muted); margin:0; max-width:60ch}
+  .stats{display:flex; flex-wrap:wrap; gap:14px; margin-top:30px}
+  .stat{background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:14px 18px; box-shadow:var(--shadow)}
+  .stat b{display:block; font:600 24px/1 "IBM Plex Mono",monospace; color:var(--accent-ink);
+    font-variant-numeric:tabular-nums}
+  .stat span{font-size:12.5px; color:var(--muted)}
+
+  .callout{border-left:3px solid var(--accent); background:var(--accent-soft);
+    padding:14px 18px; border-radius:0 10px 10px 0; margin:26px 0; font-size:14px}
+
+  /* TOC */
+  nav.toc{margin:40px 0 8px; background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:24px 28px; box-shadow:var(--shadow)}
+  nav.toc h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--faint);
+    margin:0 0 12px}
+  nav.toc ol{margin:0; padding-left:22px; columns:2; column-gap:32px; font-size:14px}
+  nav.toc li{margin:5px 0; break-inside:avoid}
+
+  /* Sections */
+  .doc-section{padding:44px 0; border-bottom:1px solid var(--border)}
+  .section-eyebrow{font:600 11px/1 "IBM Plex Mono",monospace; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--accent-ink); margin-bottom:6px}
+  .doc-section h1{font-size:26px; font-weight:700; letter-spacing:-.02em; margin:0 0 18px;
+    text-wrap:balance}
+  .doc-section h2{font-size:12.5px; font-weight:600; letter-spacing:.11em; text-transform:uppercase;
+    color:var(--faint); margin:34px 0 6px}
+  .doc-section h3{font-size:16.5px; font-weight:600; letter-spacing:-.01em; margin:24px 0 2px;
+    padding-top:6px}
+  p{margin:11px 0}
+  ul{margin:11px 0; padding-left:22px}
+  li{margin:5px 0}
+  blockquote{margin:18px 0; padding:12px 18px; border-left:3px solid var(--border-strong);
+    background:var(--surface-2); border-radius:0 8px 8px 0; color:var(--muted); font-size:14px}
+  hr{border:0; border-top:1px solid var(--border); margin:22px 0}
+
+  :not(pre) > code{background:var(--surface-2); border:1px solid var(--border);
+    padding:1.5px 6px; border-radius:5px; font-size:13px; color:var(--ink)}
+  pre.code{background:var(--code-bg); color:var(--code-ink); border:1px solid var(--border-strong);
+    border-radius:10px; padding:14px 16px; margin:10px 0; overflow-x:auto; font-size:13px; line-height:1.55}
+  pre.code .c{color:var(--code-faint); font-style:italic}
+  pre.code .k{color:var(--code-kw)}
+
+  .tablewrap{overflow-x:auto; margin:14px 0}
+  table{border-collapse:collapse; width:100%; font-size:13.5px}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top}
+  th{font-weight:600; color:var(--muted); font-size:12px; letter-spacing:.03em;
+    text-transform:uppercase; border-bottom:1.5px solid var(--border-strong)}
+  tbody tr:nth-child(even){background:var(--surface-2)}
+
+  footer{padding:34px 0 70px; color:var(--faint); font-size:13px}
+
+  .toggle{position:fixed; top:16px; right:16px; z-index:10; background:var(--surface);
+    color:var(--muted); border:1px solid var(--border-strong); border-radius:100px;
+    padding:8px 14px; font:500 12.5px/1 "IBM Plex Sans",sans-serif; cursor:pointer; box-shadow:var(--shadow)}
+
+  @media print{
+    :root{--bg:#fff; --surface:#fff; --surface-2:#f4f6f9; --shadow:none}
+    .toggle{display:none}
+    .wrap{max-width:none; padding:0 8mm}
+    .doc-section{padding:18px 0; break-inside:auto}
+    .doc-section h1,.doc-section h3{break-after:avoid}
+    pre.code,table,blockquote{break-inside:avoid}
+    nav.toc ol{columns:2}
+    a{color:var(--ink); text-decoration:none}
+    .cover{padding:12mm 0 8mm}
+  }
+</style>
+</head>
+<body>
+<button class="toggle" id="themeToggle" aria-label="Toggle color theme">◐ Theme</button>
+<div class="wrap">
+  <header class="cover">
+    <span class="eyebrow">Coding standard reference</span>
+    <h1>MISRA C:2023 &amp; C++:2023 Guidelines</h1>
+    <p>A consolidated, paraphrased reference of the MISRA C and C++ coding
+    guidelines — every directive and rule with its category, decidability, rationale,
+    and compliant / non-compliant examples.</p>
+    <div class="stats">
+      <div class="stat"><b>~221</b><span>MISRA C:2023 guidelines</span></div>
+      <div class="stat"><b>179</b><span>MISRA C++:2023 guidelines</span></div>
+      <div class="stat"><b>3</b><span>categories · Mandatory / Required / Advisory</span></div>
+    </div>
+    <div class="callout"><strong>Copyright &amp; accuracy.</strong> MISRA® is a
+    registered trademark of HORIBA MIRA Ltd. This document contains
+    <strong>paraphrased summaries only</strong> — not the official wording — and is
+    not a substitute for the purchased standard. Entries flagged <code>⚑verify</code>
+    (amendment-added C rules; all C++ rule IDs) should be confirmed against the
+    official document before use in a formal compliance matrix.</div>
+  </header>
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <!--TOC-->
+    </ol>
+  </nav>
+
+  <!--BODY-->
+
+  <footer>
+    Generated from the <code>misra-guidelines</code> skill · paraphrased reference,
+    not the official MISRA standard.
+  </footer>
+</div>
+<script>
+  (function(){
+    var btn=document.getElementById('themeToggle'), root=document.documentElement;
+    function cur(){return root.getAttribute('data-theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');}
+    btn.addEventListener('click',function(){root.setAttribute('data-theme',cur()==='dark'?'light':'dark');});
+  })();
+</script>
+</body>
+</html>

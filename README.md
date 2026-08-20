@@ -13,6 +13,17 @@ browser). In short: copy the `misra-guidelines/` folder into `~/.claude/skills/`
 (personal) or `.claude/skills/` (per-project), start a fresh session, and Claude
 loads it automatically when you ask about MISRA / C / C++ compliance.
 
+**Consolidated reference document:** every directive and rule (C and C++) in one
+document, with rationale and examples:
+- [`docs/misra-guidelines-reference.html`](docs/misra-guidelines-reference.html) — styled, theme-aware, print-ready
+- [`docs/misra-guidelines-reference.pdf`](docs/misra-guidelines-reference.pdf) — portable/printable
+
+Regenerate it from the source markdown any time with:
+
+```
+python3 scripts/build_reference_doc.py
+```
+
 ## What it covers
 
 | Standard        | Total | Directives | Rules | Base language        |

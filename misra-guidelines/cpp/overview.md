@@ -58,18 +58,20 @@ The rules are grouped under sections corresponding to the C++ standard, broadly:
 ## ⚠️ Enumeration status — important
 
 Unlike the MISRA C bundle (whose rule list is stable and long-established via
-C:2012), the **full, verbatim per-rule enumeration of all 175 C++:2023 rules
-could not be fully grounded** in this build (the authoritative reference pages
-are blocked by the environment's network policy, and the standard is
-copyright-protected). The `cpp/rules/` files therefore contain:
+C:2012), the **verbatim per-rule identifiers of MISRA C++:2023 could not be
+grounded** in this build: the authoritative reference lists are blocked by the
+environment's network policy, the standard is copyright-protected, and the
+reachable community sources use the *old* MISRA C++:2008 hyphenated numbering
+(`5-0-1`) rather than the 2023 dotted scheme (`8.2.3`), so they are unsafe to
+copy.
 
-1. The **accurate structural framework** (sections, ID scheme, categories), and
-2. A set of **well-established, representative rules** carried over from
-   AUTOSAR C++14 / MISRA C++ practice, each marked `⚑verify`.
+The `cpp/rules/` files therefore provide **comprehensive thematic coverage** —
+every ISO C++17 clause area, with rationale and compliant/non-compliant examples
+per guideline — but with each entry marked `⚑verify`. Treat this as a complete
+**engineering reference**; treat the official standard as the authority for the
+exact IDs/categories needed in a **formal compliance matrix**.
 
-To complete the index to all 175 rules with confidence, provide **any one** of:
+To pin the exact `Rule x.y.z` identifiers, provide **any one** of:
 - the official MISRA C++:2023 PDF (place it in the repo; I'll paraphrase it), or
 - a plain-text/CSV list of the rule IDs + titles, or
-- temporary network access to a reference page listing them.
-
-I will then fill `cpp/rules/` to full coverage.
+- an unblocked reference page listing them.

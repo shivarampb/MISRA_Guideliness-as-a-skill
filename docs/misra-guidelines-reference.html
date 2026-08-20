@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MISRA Guidelines Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f5f7fa; --surface:#ffffff; --surface-2:#eef1f6;
+    --ink:#141821; --muted:#5b6472; --faint:#8a93a3;
+    --border:#e0e5ec; --border-strong:#cdd4de;
+    --accent:#c8760a; --accent-ink:#94560a; --accent-soft:#fbeed8;
+    --good:#0f8a7e; --good-soft:#e0f2ef; --bad:#c0392b;
+    --code-bg:#141821; --code-ink:#e7ebf2; --code-faint:#7f8a9c; --code-kw:#f0a13c;
+    --shadow:0 1px 2px rgba(20,24,33,.04),0 8px 24px rgba(20,24,33,.06);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1017; --surface:#141924; --surface-2:#1b2130;
+      --ink:#e7ebf2; --muted:#9aa4b5; --faint:#6b7688;
+      --border:#242c3a; --border-strong:#313a4b;
+      --accent:#f0a13c; --accent-ink:#f6bd6f; --accent-soft:#2a2013;
+      --good:#3fb8a9; --good-soft:#12241f; --bad:#e8776b;
+      --code-bg:#0a0d13; --code-ink:#e7ebf2; --code-faint:#6b7688; --code-kw:#f0a13c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+      --bg:#0d1017; --surface:#141924; --surface-2:#1b2130;
+      --ink:#e7ebf2; --muted:#9aa4b5; --faint:#6b7688;
+      --border:#242c3a; --border-strong:#313a4b;
+      --accent:#f0a13c; --accent-ink:#f6bd6f; --accent-soft:#2a2013;
+      --good:#3fb8a9; --good-soft:#12241f; --bad:#e8776b;
+      --code-bg:#0a0d13; --code-ink:#e7ebf2; --code-faint:#6b7688; --code-kw:#f0a13c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:15.5px; line-height:1.62; letter-spacing:-.003em;
+  }
+  .wrap{max-width:900px; margin:0 auto; padding:0 26px}
+  code,pre,.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  a{color:var(--accent-ink); text-decoration:underline; text-underline-offset:2px}
+
+  /* Cover */
+  .cover{padding:72px 0 44px; border-bottom:2px solid var(--accent)}
+  .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:600;
+    letter-spacing:.13em; text-transform:uppercase; color:var(--accent-ink);
+    background:var(--accent-soft); padding:6px 13px; border-radius:100px; margin-bottom:24px}
+  .eyebrow::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--accent)}
+  .cover h1{font-size:clamp(32px,6vw,52px); line-height:1.04; font-weight:700;
+    letter-spacing:-.025em; margin:0 0 14px; text-wrap:balance}
+  .cover p{font-size:18px; color:var(--muted); margin:0; max-width:60ch}
+  .stats{display:flex; flex-wrap:wrap; gap:14px; margin-top:30px}
+  .stat{background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:14px 18px; box-shadow:var(--shadow)}
+  .stat b{display:block; font:600 24px/1 "IBM Plex Mono",monospace; color:var(--accent-ink);
+    font-variant-numeric:tabular-nums}
+  .stat span{font-size:12.5px; color:var(--muted)}
+
+  .callout{border-left:3px solid var(--accent); background:var(--accent-soft);
+    padding:14px 18px; border-radius:0 10px 10px 0; margin:26px 0; font-size:14px}
+
+  /* TOC */
+  nav.toc{margin:40px 0 8px; background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:24px 28px; box-shadow:var(--shadow)}
+  nav.toc h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--faint);
+    margin:0 0 12px}
+  nav.toc ol{margin:0; padding-left:22px; columns:2; column-gap:32px; font-size:14px}
+  nav.toc li{margin:5px 0; break-inside:avoid}
+
+  /* Sections */
+  .doc-section{padding:44px 0; border-bottom:1px solid var(--border)}
+  .section-eyebrow{font:600 11px/1 "IBM Plex Mono",monospace; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--accent-ink); margin-bottom:6px}
+  .doc-section h1{font-size:26px; font-weight:700; letter-spacing:-.02em; margin:0 0 18px;
+    text-wrap:balance}
+  .doc-section h2{font-size:12.5px; font-weight:600; letter-spacing:.11em; text-transform:uppercase;
+    color:var(--faint); margin:34px 0 6px}
+  .doc-section h3{font-size:16.5px; font-weight:600; letter-spacing:-.01em; margin:24px 0 2px;
+    padding-top:6px}
+  p{margin:11px 0}
+  ul{margin:11px 0; padding-left:22px}
+  li{margin:5px 0}
+  blockquote{margin:18px 0; padding:12px 18px; border-left:3px solid var(--border-strong);
+    background:var(--surface-2); border-radius:0 8px 8px 0; color:var(--muted); font-size:14px}
+  hr{border:0; border-top:1px solid var(--border); margin:22px 0}
+
+  :not(pre) > code{background:var(--surface-2); border:1px solid var(--border);
+    padding:1.5px 6px; border-radius:5px; font-size:13px; color:var(--ink)}
+  pre.code{background:var(--code-bg); color:var(--code-ink); border:1px solid var(--border-strong);
+    border-radius:10px; padding:14px 16px; margin:10px 0; overflow-x:auto; font-size:13px; line-height:1.55}
+  pre.code .c{color:var(--code-faint); font-style:italic}
+  pre.code .k{color:var(--code-kw)}
+
+  .tablewrap{overflow-x:auto; margin:14px 0}
+  table{border-collapse:collapse; width:100%; font-size:13.5px}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top}
+  th{font-weight:600; color:var(--muted); font-size:12px; letter-spacing:.03em;
+    text-transform:uppercase; border-bottom:1.5px solid var(--border-strong)}
+  tbody tr:nth-child(even){background:var(--surface-2)}
+
+  footer{padding:34px 0 70px; color:var(--faint); font-size:13px}
+
+  .toggle{position:fixed; top:16px; right:16px; z-index:10; background:var(--surface);
+    color:var(--muted); border:1px solid var(--border-strong); border-radius:100px;
+    padding:8px 14px; font:500 12.5px/1 "IBM Plex Sans",sans-serif; cursor:pointer; box-shadow:var(--shadow)}
+
+  @media print{
+    :root{--bg:#fff; --surface:#fff; --surface-2:#f4f6f9; --shadow:none}
+    .toggle{display:none}
+    .wrap{max-width:none; padding:0 8mm}
+    .doc-section{padding:18px 0; break-inside:auto}
+    .doc-section h1,.doc-section h3{break-after:avoid}
+    pre.code,table,blockquote{break-inside:avoid}
+    nav.toc ol{columns:2}
+    a{color:var(--ink); text-decoration:none}
+    .cover{padding:12mm 0 8mm}
+  }
+</style>
+</head>
+<body>
+<button class="toggle" id="themeToggle" aria-label="Toggle color theme">◐ Theme</button>
+<div class="wrap">
+  <header class="cover">
+    <span class="eyebrow">Coding standard reference</span>
+    <h1>MISRA C:2023 &amp; C++:2023 Guidelines</h1>
+    <p>A consolidated, paraphrased reference of the MISRA C and C++ coding
+    guidelines — every directive and rule with its category, decidability, rationale,
+    and compliant / non-compliant examples.</p>
+    <div class="stats">
+      <div class="stat"><b>~221</b><span>MISRA C:2023 guidelines</span></div>
+      <div class="stat"><b>179</b><span>MISRA C++:2023 guidelines</span></div>
+      <div class="stat"><b>3</b><span>categories · Mandatory / Required / Advisory</span></div>
+    </div>
+    <div class="callout"><strong>Copyright &amp; accuracy.</strong> MISRA® is a
+    registered trademark of HORIBA MIRA Ltd. This document contains
+    <strong>paraphrased summaries only</strong> — not the official wording — and is
+    not a substitute for the purchased standard. Entries flagged <code>⚑verify</code>
+    (amendment-added C rules; all C++ rule IDs) should be confirmed against the
+    official document before use in a formal compliance matrix.</div>
+  </header>
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#misra-c-2023-overview">MISRA C:2023 — Overview</a></li>
+<li><a href="#misra-c-2023-directives">MISRA C:2023 — Directives</a></li>
+<li><a href="#misra-c-2023-rules-1-6">MISRA C:2023 — Rules §1–§6</a></li>
+<li><a href="#misra-c-2023-rules-7-9">MISRA C:2023 — Rules §7–§9</a></li>
+<li><a href="#misra-c-2023-rules-10-11">MISRA C:2023 — Rules §10–§11</a></li>
+<li><a href="#misra-c-2023-rules-12-16">MISRA C:2023 — Rules §12–§16</a></li>
+<li><a href="#misra-c-2023-rules-17-19">MISRA C:2023 — Rules §17–§19</a></li>
+<li><a href="#misra-c-2023-rules-20">MISRA C:2023 — Rules §20</a></li>
+<li><a href="#misra-c-2023-rules-21-22">MISRA C:2023 — Rules §21–§22</a></li>
+<li><a href="#misra-c-2023-overview">MISRA C++:2023 — Overview</a></li>
+<li><a href="#misra-c-2023-directives">MISRA C++:2023 — Directives</a></li>
+<li><a href="#misra-c-2023-rules">MISRA C++:2023 — Rules</a></li>
+    </ol>
+  </nav>
+
+  <section id="misra-c-2023-overview" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Overview</h1>
+<p>MISRA C:2023 is the third edition of the MISRA C guidelines. It consolidates <strong>MISRA C:2012</strong> with <strong>Amendments 1–4</strong> and the <strong>Technical Corrigenda</strong> into a single document, and covers the <strong>C90, C99, C11 and C18</strong> language editions.</p>
+<ul>
+<li><strong>~221 guidelines total</strong> ≈ <strong>~21 directives</strong> + <strong>~200 rules</strong>.</li>
+<li>Each guideline has a <strong>category</strong> and a <strong>decidability</strong>.</li>
+<li>Rules are numbered <code>Rule &lt;section&gt;.&lt;index&gt;</code>; directives <code>Dir &lt;section&gt;.&lt;index&gt;</code>.</li>
+</ul>
+<h2>Categories</h2>
+<div class="tablewrap"><table><thead><tr><th>Category</th><th>Deviations</th><th>Notes</th></tr></thead><tbody><tr><td>Mandatory</td><td><strong>Never</strong> permitted</td><td>Introduced in C:2012; violation = defect</td></tr><tr><td>Required</td><td>Permitted, formally recorded</td><td>The bulk of the ruleset</td></tr><tr><td>Advisory</td><td>Permitted, recording recommended</td><td>Good practice</td></tr></tbody></table></div>
+<h2>Rules vs. Directives</h2>
+<ul>
+<li><strong>Rules</strong> — compliance can be checked purely from the <strong>source code</strong>. Most are</li>
+</ul>
+<p>  amenable to static analysis.</p>
+<ul>
+<li><strong>Directives</strong> — compliance also depends on information <strong>outside the code</strong></li>
+</ul>
+<p>  (requirements, documentation, process). A tool alone cannot fully check them.</p>
+<h2>Decidability</h2>
+<ul>
+<li><strong>Decidable</strong> — an analyser can always give a correct yes/no.</li>
+<li><strong>Undecidable</strong> — cannot be resolved in every case; needs review, testing, or</li>
+</ul>
+<p>  runtime checks.</p>
+<ul>
+<li>Analysis scope is either <strong>Single Translation Unit</strong> or <strong>System</strong> (whole</li>
+</ul>
+<p>  program / all TUs linked together).</p>
+<h2>The Essential Type Model (key concept for §10)</h2>
+<p>MISRA defines an &quot;essential type&quot; for every expression, independent of the C type used to store it. The essential type categories are:</p>
+<ul>
+<li>essentially <strong>Boolean</strong></li>
+<li>essentially <strong>character</strong></li>
+<li>essentially <strong>signed</strong> integer</li>
+<li>essentially <strong>unsigned</strong> integer</li>
+<li>essentially <strong>enum</strong> (named, non-anonymous)</li>
+<li>essentially <strong>floating</strong></li>
+</ul>
+<p>Section 10 rules constrain mixing these categories and prevent implicit conversions that silently change value or category. This model is the single most important concept to understand when applying MISRA C.</p>
+<h2>Deviation process (for Required/Advisory only)</h2>
+<p>A compliant project may deviate from a <strong>Required</strong> or <strong>Advisory</strong> guideline if it records a <strong>deviation</strong>: the guideline ID, the rationale, the scope, and sign -off. <strong>Mandatory</strong> guidelines can never be deviated. A <strong>Guideline Compliance Summary (GCS)</strong> documents, for every guideline, whether the project complies, deviates, or the guideline is disapplied.</p>
+<h2>Section map (rules)</h2>
+<div class="tablewrap"><table><thead><tr><th>§</th><th>Topic</th><th>Index file</th></tr></thead><tbody><tr><td>1</td><td>A standard C environment</td><td>rules/01-06-environment-and-types.md</td></tr><tr><td>2</td><td>Unused code</td><td>rules/01-06-environment-and-types.md</td></tr><tr><td>3</td><td>Comments</td><td>rules/01-06-environment-and-types.md</td></tr><tr><td>4</td><td>Character sets &amp; lexical</td><td>rules/01-06-environment-and-types.md</td></tr><tr><td>5</td><td>Identifiers</td><td>rules/01-06-environment-and-types.md</td></tr><tr><td>6</td><td>Types</td><td>rules/01-06-environment-and-types.md</td></tr><tr><td>7</td><td>Literals and constants</td><td>rules/07-09-constants-declarations-init.md</td></tr><tr><td>8</td><td>Declarations and definitions</td><td>rules/07-09-constants-declarations-init.md</td></tr><tr><td>9</td><td>Initialization</td><td>rules/07-09-constants-declarations-init.md</td></tr><tr><td>10</td><td>The essential type model</td><td>rules/10-11-types-and-pointers.md</td></tr><tr><td>11</td><td>Pointer type conversions</td><td>rules/10-11-types-and-pointers.md</td></tr><tr><td>12</td><td>Expressions</td><td>rules/12-16-expressions-and-control.md</td></tr><tr><td>13</td><td>Side effects</td><td>rules/12-16-expressions-and-control.md</td></tr><tr><td>14</td><td>Control statement expressions</td><td>rules/12-16-expressions-and-control.md</td></tr><tr><td>15</td><td>Control flow</td><td>rules/12-16-expressions-and-control.md</td></tr><tr><td>16</td><td>Switch statements</td><td>rules/12-16-expressions-and-control.md</td></tr><tr><td>17</td><td>Functions</td><td>rules/17-19-functions-pointers-storage.md</td></tr><tr><td>18</td><td>Pointers and arrays</td><td>rules/17-19-functions-pointers-storage.md</td></tr><tr><td>19</td><td>Overlapping storage</td><td>rules/17-19-functions-pointers-storage.md</td></tr><tr><td>20</td><td>Preprocessing directives</td><td>rules/20-preprocessing.md</td></tr><tr><td>21</td><td>Standard libraries</td><td>rules/21-22-libraries-and-resources.md</td></tr><tr><td>22</td><td>Resources</td><td>rules/21-22-libraries-and-resources.md</td></tr></tbody></table></div>
+<p>Directives live in <code>directives.md</code>.</p>
+<blockquote><code>⚑verify</code> on an entry means: check the ID/category against the official standard before using it in a formal compliance record — it was added or changed by an amendment and public reconstructions vary.</blockquote>
+</section>
+<section id="misra-c-2023-directives" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Directives (in depth)</h1>
+<p>Directives require information <strong>beyond the source code</strong> (requirements, documentation, build process) to check. Each entry: <strong>ID — Category · Decidability · Scope</strong>, paraphrased guideline, rationale, and guidance.</p>
+<hr>
+<h2>Dir 1 — The implementation</h2>
+<h3>Dir 1.1 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> Any implementation-defined behaviour the program&#x27;s output depends on must be documented and understood. <strong>Rationale:</strong> Type sizes, <code>char</code> signedness, right-shift of negatives, etc. vary by compiler; relying on them undocumented breaks portability.</p>
+<h3>Dir 1.2 — Advisory ⚑verify</h3>
+<p><strong>Guideline:</strong> Language extensions should be documented and understood.</p>
+<hr>
+<h2>Dir 2 — Compilation and build</h2>
+<h3>Dir 2.1 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> All source files must compile without any compilation errors. <strong>Rationale:</strong> Warnings/errors suppressed or ignored hide real defects; a clean build at max diagnostic level is the baseline.</p>
+<hr>
+<h2>Dir 3 — Requirements traceability</h2>
+<h3>Dir 3.1 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> All code must be traceable to documented requirements. <strong>Rationale:</strong> Untraceable code may be unnecessary or unverified — a safety concern.</p>
+<hr>
+<h2>Dir 4 — Code design</h2>
+<h3>Dir 4.1 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> Run-time failures must be minimized. <strong>Rationale:</strong> Guard against division by zero, overflow, out-of-range indexing, null dereference — by design, static proof, or run-time checks.</p>
+<h3>Dir 4.2 — Advisory · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> All use of assembly language should be documented.</p>
+<h3>Dir 4.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Assembly language must be encapsulated and isolated.</p>
+<pre class="code"><code><span class="c">/* Compliant: wrap asm in a documented <span class="k">inline</span> function */</span>
+<span class="k">static</span> <span class="k">inline</span> <span class="k">void</span> nop(<span class="k">void</span>){ __asm(&quot;nop&quot;); }</code></pre>
+<h3>Dir 4.4 — Advisory · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> Sections of code should not be &quot;commented out&quot;. <strong>Rationale:</strong> Use version control, not comments, to remove code. Commented-out code rots and confuses.</p>
+<h3>Dir 4.5 — Advisory · Undecidable · System</h3>
+<p><strong>Guideline:</strong> Identifiers in the same name space with overlapping visibility should be typographically unambiguous (avoid <code>l</code>/<code>1</code>, <code>O</code>/<code>0</code>, <code>rn</code>/<code>m</code>).</p>
+<h3>Dir 4.6 — Advisory · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>typedef</code>s that indicate size and signedness should be used in place of the basic numerical types.</p>
+<pre class="code"><code><span class="k">int</span>   count;     <span class="c">/* Non-compliant */</span>
+int32_t count;   <span class="c">/* Compliant */</span></code></pre>
+<h3>Dir 4.7 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> If a function returns error information, that error information must be tested.</p>
+<pre class="code"><code>(<span class="k">void</span>)fclose(f);          <span class="c">/* Non-compliant <span class="k">if</span> the result matters */</span>
+<span class="k">if</span> (fclose(f) != 0) { <span class="c">/* handle */</span> }   <span class="c">/* Compliant */</span></code></pre>
+<h3>Dir 4.8 — Advisory · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> If a pointer to a struct/union is never dereferenced within a TU, its implementation should be hidden (opaque type).</p>
+<h3>Dir 4.9 — Advisory · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> A function should be preferred over a function-like macro where interchangeable. <strong>Rationale:</strong> Functions are type-checked and side-effect-safe; macros aren&#x27;t.</p>
+<h3>Dir 4.10 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Precautions must be taken to prevent a header being included more than once (include guards / <code>#pragma once</code>).</p>
+<pre class="code"><code>#ifndef FOO_H
+#define FOO_H
+<span class="c">/* ... */</span>
+#endif</code></pre>
+<h3>Dir 4.11 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> The validity of values passed to library functions must be checked.</p>
+<pre class="code"><code><span class="k">if</span> (x &gt;= 0.0) { r = sqrt(x); }   <span class="c">/* Compliant: domain checked */</span></code></pre>
+<h3>Dir 4.12 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> <strong>Dynamic memory allocation must not be used.</strong> <strong>Rationale:</strong> Non-deterministic timing, fragmentation, and leak/UAF risk make it unsuitable for many safety-critical systems.</p>
+<h3>Dir 4.13 — Advisory · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> Functions operating on a resource should be called in an appropriate sequence (e.g. open → use → close).</p>
+<h3>Dir 4.14 — Required · Undecidable · Single TU <em>(AMD1 — security)</em></h3>
+<p><strong>Guideline:</strong> The validity of values received from external sources must be checked (bounds, type, range) before use.</p>
+<h3>Dir 4.15 — Required · Undecidable · Single TU ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> Evaluation of floating-point expressions must not lead to the undetected generation of infinities and NaNs.</p>
+<hr>
+<h2>Dir 5 — Concurrency <em>(C:2023 amendments)</em> ⚑verify</h2>
+<p>The published C:2023 total is ~21 directives across ~5 sections (vs 17 in the original C:2012). A <strong>concurrency</strong> directive area (<code>Dir 5.x</code>), tied to the C11 threading additions, is associated with the newer editions. <strong>Confirm the exact IDs, titles, and categories of any `Dir 5.x` guidelines against the official MISRA C:2023 document</strong> before citing them in a compliance matrix.</p>
+</section>
+<section id="misra-c-2023-rules-1-6" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Rules §1–§6 (in depth)</h1>
+<p>Each entry: <strong>ID — Category · Decidability · Scope</strong>, paraphrased guideline, rationale, and (where useful) non-compliant vs compliant C. Summaries are paraphrased; verify <code>⚑verify</code> entries against the official standard.</p>
+<hr>
+<h2>§1 — A standard C environment</h2>
+<h3>Rule 1.1 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> The program must contain no violations of standard C syntax and constraints, and must not exceed the implementation&#x27;s translation limits. <strong>Rationale:</strong> Code relying on non-standard syntax or exceeding documented limits (nesting depth, identifier length, etc.) may be rejected or silently mistranslated by a conforming compiler.</p>
+<pre class="code"><code><span class="c">/* Non-compliant: constraint violation — assigning to array name */</span>
+<span class="k">int</span> a[4]; a = other;        <span class="c">/* not an lvalue */</span>
+<span class="c">/* Compliant */</span>
+<span class="k">int</span> a[4]; (<span class="k">void</span>)memcpy(a, other, <span class="k">sizeof</span> a);</code></pre>
+<h3>Rule 1.2 — Advisory · Undecidable · System</h3>
+<p><strong>Guideline:</strong> Language extensions should not be used. <strong>Rationale:</strong> Extensions (<code>__attribute__</code>, <code>#pragma</code>, inline asm keywords) are not portable and change meaning between compilers.</p>
+<pre class="code"><code><span class="k">int</span> x __attribute__((aligned(16)));   <span class="c">/* Non-compliant: GCC extension */</span></code></pre>
+<p><strong>Exception:</strong> Extensions needed for the target may be used if isolated and documented (see Dir 4.3 / Dir 1.2).</p>
+<h3>Rule 1.3 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> There must be no occurrence of undefined or critical unspecified behaviour. <strong>Rationale:</strong> UB (signed overflow, out-of-bounds access, use-after-free, data races) makes program behaviour unpredictable across compilers/optimisation levels.</p>
+<pre class="code"><code><span class="k">int</span> i = INT_MAX; i = i + 1;   <span class="c">/* Non-compliant: <span class="k">signed</span> overflow is UB */</span></code></pre>
+<h3>Rule 1.4 — Required · Decidable · Single TU ⚑verify <em>(AMD2, C11/C18)</em></h3>
+<p><strong>Guideline:</strong> Emergent (newer) language features must not be used. <strong>Rationale:</strong> Features such as <code>_Generic</code>, <code>_Atomic</code>, <code>_Noreturn</code>, <code>&lt;threads.h&gt;</code> carry portability and analysis risks; restrict them unless explicitly adopted.</p>
+<h3>Rule 1.5 — Required ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> Obsolescent language features must not be used. <strong>Rationale:</strong> Features flagged obsolescent by the C standard (e.g. certain <code>gets</code>-style usages) may be removed and are error-prone.</p>
+<hr>
+<h2>§2 — Unused code</h2>
+<h3>Rule 2.1 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> A project must not contain unreachable code. <strong>Rationale:</strong> Unreachable code cannot execute; its presence signals a logic error and bloats the binary.</p>
+<pre class="code"><code><span class="k">return</span> x;
+y = 1;          <span class="c">/* Non-compliant: unreachable */</span></code></pre>
+<h3>Rule 2.2 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> There must be no dead code (operations whose removal cannot affect behaviour). <strong>Rationale:</strong> Dead code wastes effort, confuses reviewers, and often hides a bug.</p>
+<pre class="code"><code>(<span class="k">void</span>)(a + b);  <span class="c">/* Non-compliant: result unused, no side effect */</span></code></pre>
+<h3>Rule 2.3 — Advisory · Decidable · System</h3>
+<p><strong>Guideline:</strong> A project should not contain unused type declarations. <strong>Rationale:</strong> Stale <code>typedef</code>s/tags clutter the code and mislead maintainers.</p>
+<h3>Rule 2.4 — Advisory · Decidable · System</h3>
+<p><strong>Guideline:</strong> A project should not contain unused tag declarations.</p>
+<h3>Rule 2.5 — Advisory · Decidable · System</h3>
+<p><strong>Guideline:</strong> A project should not contain unused macro declarations.</p>
+<h3>Rule 2.6 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A function should not contain unused label declarations.</p>
+<h3>Rule 2.7 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> There should be no unused parameters in functions.</p>
+<pre class="code"><code><span class="k">void</span> f(<span class="k">int</span> used, <span class="k">int</span> unused) { g(used); }   <span class="c">/* Non-compliant */</span>
+<span class="k">void</span> f(<span class="k">int</span> used, <span class="k">int</span> x)      { (<span class="k">void</span>)x; g(used); }  <span class="c">/* Compliant: explicitly consumed */</span></code></pre>
+<h3>Rule 2.8 — Advisory · Decidable · System ⚑verify <em>(AMD)</em></h3>
+<p><strong>Guideline:</strong> A project should not contain unused object definitions.</p>
+<hr>
+<h2>§3 — Comments</h2>
+<h3>Rule 3.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The sequences <code>/*</code> and <code>//</code> must not appear within a comment. <strong>Rationale:</strong> Nested comment markers cause code to be unexpectedly commented out.</p>
+<pre class="code"><code><span class="c">/* opening /* nested */</span> x = 1;   <span class="c">/* Non-compliant: x=1 is NOT commented out as intended */</span></code></pre>
+<h3>Rule 3.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Line-splicing (<code>\</code> at end of line) must not be used in <code>//</code> comments. <strong>Rationale:</strong> A trailing backslash silently extends a <code>//</code> comment onto the next line, swallowing code.</p>
+<pre class="code"><code><span class="c">// comment ending in backslash \</span>
+next_statement();   <span class="c">/* Non-compliant: this line is part of the comment */</span></code></pre>
+<hr>
+<h2>§4 — Character sets and lexical conventions</h2>
+<h3>Rule 4.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Octal and hexadecimal escape sequences must be terminated. <strong>Rationale:</strong> <code>&quot;\x1f2&quot;</code> is one 3-digit hex escape, not <code>\x1f</code> + <code>2</code> — terminate to avoid ambiguity.</p>
+<pre class="code"><code><span class="k">char</span> s[] = &quot;\x1B[0m&quot;;        <span class="c">/* Non-compliant: \x1B0 ambiguous */</span>
+<span class="k">char</span> s[] = &quot;\x1B&quot; &quot;[0m&quot;;     <span class="c">/* Compliant: adjacent literals terminate the escape */</span></code></pre>
+<h3>Rule 4.2 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Trigraphs should not be used. <strong>Rationale:</strong> <code>??=</code> etc. are replaced during translation and cause surprising edits to string contents.</p>
+<hr>
+<h2>§5 — Identifiers</h2>
+<h3>Rule 5.1 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> External identifiers must be distinct (within the significant- character limit). <strong>Rationale:</strong> Two externals identical in the first N characters clash at link time on limited toolchains.</p>
+<h3>Rule 5.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Identifiers in the same scope and name space must be distinct.</p>
+<h3>Rule 5.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> An identifier in an inner scope must not hide one in an outer scope.</p>
+<pre class="code"><code><span class="k">int</span> count;
+<span class="k">void</span> f(<span class="k">void</span>){ <span class="k">int</span> count = 0; }   <span class="c">/* Non-compliant: shadows file-scope count */</span></code></pre>
+<h3>Rule 5.4 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Macro identifiers must be distinct.</p>
+<h3>Rule 5.5 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Identifiers must be distinct from macro names.</p>
+<h3>Rule 5.6 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> A <code>typedef</code> name must be a unique identifier.</p>
+<h3>Rule 5.7 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> A tag name must be a unique identifier.</p>
+<h3>Rule 5.8 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> Identifiers with external linkage that define objects/functions must be unique.</p>
+<h3>Rule 5.9 — Advisory · Decidable · System</h3>
+<p><strong>Guideline:</strong> Identifiers with internal linkage that define objects/functions should be unique.</p>
+<hr>
+<h2>§6 — Types</h2>
+<h3>Rule 6.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Bit-fields must only be declared with an appropriate type. <strong>Rationale:</strong> The set of permitted bit-field types is implementation-defined for types other than <code>int</code>/<code>unsigned int</code>/<code>_Bool</code>; use only portable ones.</p>
+<pre class="code"><code><span class="k">struct</span> S { <span class="k">char</span> b : 2; };        <span class="c">/* Non-compliant: <span class="k">char</span> bit-field not portable */</span>
+<span class="k">struct</span> S { <span class="k">unsigned</span> <span class="k">int</span> b : 2; };<span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 6.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Single-bit named bit-fields must not be of a signed type. <strong>Rationale:</strong> A 1-bit signed field holds only 0 and −1, almost never what&#x27;s meant.</p>
+<pre class="code"><code><span class="k">struct</span> S { <span class="k">signed</span> <span class="k">int</span> flag : 1; };   <span class="c">/* Non-compliant */</span>
+<span class="k">struct</span> S { <span class="k">unsigned</span> <span class="k">int</span> flag : 1; }; <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 6.3 — Required · Decidable · Single TU ⚑verify <em>(AMD)</em></h3>
+<p><strong>Guideline:</strong> A bit-field must not be declared as a member of a union.</p>
+</section>
+<section id="misra-c-2023-rules-7-9" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Rules §7–§9 (in depth)</h1>
+<p>Each entry: <strong>ID — Category · Decidability · Scope</strong>, paraphrased guideline, rationale, and examples. <code>⚑verify</code> = confirm against the official standard.</p>
+<hr>
+<h2>§7 — Literals and constants</h2>
+<h3>Rule 7.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Octal constants must not be used. <strong>Rationale:</strong> A leading <code>0</code> silently makes a constant octal — a classic bug.</p>
+<pre class="code"><code><span class="k">int</span> mask = 011;   <span class="c">/* Non-compliant: octal 011 == decimal 9, not 11 */</span>
+<span class="k">int</span> mask = 9;     <span class="c">/* Compliant */</span></code></pre>
+<p><strong>Exception:</strong> The single digit <code>0</code> is not an octal constant.</p>
+<h3>Rule 7.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A <code>u</code>/<code>U</code> suffix must be applied to all integer constants represented in an unsigned type. <strong>Rationale:</strong> Makes the constant&#x27;s signedness explicit and avoids surprising signed/unsigned conversions.</p>
+<pre class="code"><code>uint32_t x = 0xFFFFFFFF;    <span class="c">/* Non-compliant: value needs <span class="k">unsigned</span> type */</span>
+uint32_t x = 0xFFFFFFFFU;   <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 7.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The lowercase <code>l</code> must not be used in a literal suffix. <strong>Rationale:</strong> <code>l</code> is easily confused with <code>1</code>. Use <code>L</code>.</p>
+<pre class="code"><code><span class="k">long</span> n = 100l;   <span class="c">/* Non-compliant: looks like 1001 */</span>
+<span class="k">long</span> n = 100L;   <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 7.4 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A string literal must not be assigned to an object unless its type is pointer to const-qualified <code>char</code>. <strong>Rationale:</strong> String literals are non-modifiable; writing through a non-const pointer is UB.</p>
+<pre class="code"><code><span class="k">char</span> *p = &quot;hello&quot;;        <span class="c">/* Non-compliant */</span>
+<span class="k">const</span> <span class="k">char</span> *p = &quot;hello&quot;;  <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 7.5 — Required ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> An integer constant macro argument must have the type its macro requires.</p>
+<h3>Rule 7.6 — Required ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> The small-integer variants of the minimum-width integer constant macros must not be used.</p>
+<hr>
+<h2>§8 — Declarations and definitions</h2>
+<h3>Rule 8.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Types must be explicitly specified (no implicit <code>int</code>).</p>
+<pre class="code"><code><span class="k">static</span> x;         <span class="c">/* Non-compliant: implicit <span class="k">int</span> */</span>
+<span class="k">static</span> <span class="k">int</span> x;     <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 8.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Function types must be in prototype form with named parameters.</p>
+<pre class="code"><code><span class="k">int</span> f();              <span class="c">/* Non-compliant: not a prototype */</span>
+<span class="k">int</span> f(<span class="k">int</span> a, <span class="k">int</span> b);  <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 8.3 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> All declarations of an object/function must use the same names and type qualifiers. <strong>Rationale:</strong> Divergent declarations across TUs cause silent type mismatches.</p>
+<h3>Rule 8.4 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> A compatible declaration must be visible when an object/function with external linkage is defined. <strong>Rationale:</strong> Forces the definition to be checked against the header prototype.</p>
+<pre class="code"><code><span class="c">/* foo.c — Non-compliant: no visible prototype <span class="k">for</span> exported symbol */</span>
+<span class="k">int</span> foo(<span class="k">void</span>){ <span class="k">return</span> 1; }
+<span class="c">/* Compliant: include the header that declares foo */</span>
+#include &quot;foo.h&quot;
+<span class="k">int</span> foo(<span class="k">void</span>){ <span class="k">return</span> 1; }</code></pre>
+<h3>Rule 8.5 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> An external object/function must be declared once, in one file (typically a header).</p>
+<h3>Rule 8.6 — Required · Decidable · System</h3>
+<p><strong>Guideline:</strong> An identifier with external linkage must have exactly one external definition.</p>
+<h3>Rule 8.7 — Advisory · Decidable · System</h3>
+<p><strong>Guideline:</strong> Functions/objects should not have external linkage if referenced in only one TU (make them <code>static</code>).</p>
+<h3>Rule 8.8 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>static</code> must be used in all declarations of objects/functions with internal linkage.</p>
+<h3>Rule 8.9 — Advisory · Decidable · System</h3>
+<p><strong>Guideline:</strong> An object should be defined at block scope if used in only one function.</p>
+<h3>Rule 8.10 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> An inline function must be declared <code>static</code>. <strong>Rationale:</strong> Avoids the subtle external-inline linkage rules of C99+.</p>
+<h3>Rule 8.11 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> When an array with external linkage is declared, its size should be specified explicitly.</p>
+<pre class="code"><code><span class="k">extern</span> <span class="k">int</span> table[];    <span class="c">/* Non-compliant */</span>
+<span class="k">extern</span> <span class="k">int</span> table[10];  <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 8.12 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Within an enumerator list, implicitly-specified enum constant values must be unique.</p>
+<pre class="code"><code><span class="k">enum</span> E { A = 1, B, C = 2 };   <span class="c">/* Non-compliant: B and C both == 2 */</span></code></pre>
+<h3>Rule 8.13 — Advisory · Undecidable · System</h3>
+<p><strong>Guideline:</strong> A pointer should point to a const-qualified type whenever possible.</p>
+<h3>Rule 8.14 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The <code>restrict</code> type qualifier must not be used. <strong>Rationale:</strong> Misuse silently introduces UB via wrong aliasing assumptions.</p>
+<h3>Rule 8.15–8.17 — ⚑verify <em>(AMD2, C11/C18)</em></h3>
+<p><strong>Guideline:</strong> Constraints on alignment specifiers (<code>_Alignas</code>, <code>_Alignof</code>) and over-aligned types.</p>
+<hr>
+<h2>§9 — Initialization</h2>
+<h3>Rule 9.1 — Mandatory · Undecidable · System</h3>
+<p><strong>Guideline:</strong> The value of an automatic object must not be read before it is set. <strong>Rationale:</strong> Reading an indeterminate value is UB. <strong>No deviation permitted.</strong></p>
+<pre class="code"><code><span class="k">int</span> x; use(x);        <span class="c">/* Non-compliant */</span>
+<span class="k">int</span> x = 0; use(x);    <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 9.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The initializer for an aggregate or union must be enclosed in braces.</p>
+<pre class="code"><code><span class="k">int</span> m[2][2] = {1,2,3,4};        <span class="c">/* Non-compliant */</span>
+<span class="k">int</span> m[2][2] = {{1,2},{3,4}};    <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 9.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Arrays must not be partially initialized.</p>
+<pre class="code"><code><span class="k">int</span> a[3] = {1};        <span class="c">/* Non-compliant: a[1],a[2] implicitly 0 — state intent */</span>
+<span class="k">int</span> a[3] = {1, 0, 0};  <span class="c">/* Compliant */</span></code></pre>
+<p><strong>Exception:</strong> <code>= {0}</code> to zero the whole array is permitted.</p>
+<h3>Rule 9.4 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> An element of an object must not be initialized more than once.</p>
+<pre class="code"><code><span class="k">int</span> a[3] = {[0]=1, [0]=2};   <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 9.5 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Where designated initializers initialize an array, the array size must be specified explicitly.</p>
+<pre class="code"><code><span class="k">int</span> a[]  = {[2]=1};    <span class="c">/* Non-compliant: size implicit */</span>
+<span class="k">int</span> a[3] = {[2]=1};    <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 9.6 — Required ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> An initializer using chained designators must not mix in initializers without designators.</p>
+<h3>Rule 9.7 — Mandatory ⚑verify <em>(AMD2/AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> Atomic objects must be appropriately initialized before access.</p>
+</section>
+<section id="misra-c-2023-rules-10-11" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Rules §10–§11 (in depth)</h1>
+<p>Each entry: <strong>ID — Category · Decidability · Scope</strong>, paraphrased guideline, rationale, and examples. See <code>../overview.md</code> for the essential type model.</p>
+<hr>
+<h2>§10 — The essential type model</h2>
+<p>The &quot;essential type&quot; of an expression is its natural type before implicit promotion. Categories: Boolean, character, signed, unsigned, enum, floating. These rules stop implicit mixing that silently changes value or category.</p>
+<h3>Rule 10.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Operands must not be of an inappropriate essential type for the operator.</p>
+<pre class="code"><code><span class="k">char</span> c; <span class="k">int</span> x = c &lt;&lt; 1;    <span class="c">/* Non-compliant: shift on essentially <span class="k">char</span> */</span></code></pre>
+<h3>Rule 10.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Expressions of essentially character type must not be used inappropriately in <code>+</code>/<code>-</code>.</p>
+<pre class="code"><code><span class="k">char</span> c = &#x27;0&#x27; + &#x27;5&#x27;;        <span class="c">/* Non-compliant: adding two chars */</span>
+<span class="k">char</span> c = (<span class="k">char</span>)(&#x27;0&#x27; + 5);  <span class="c">/* Compliant: <span class="k">char</span> + <span class="k">int</span>(offset) */</span></code></pre>
+<h3>Rule 10.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A value must not be assigned to an object with narrower essential type or a different essential type category.</p>
+<pre class="code"><code>uint8_t b = 300;           <span class="c">/* Non-compliant: narrows, and 300 &gt; 255 */</span>
+int16_t s = -1; uint16_t u = s;  <span class="c">/* Non-compliant: category change <span class="k">signed</span>-&gt;<span class="k">unsigned</span> */</span></code></pre>
+<h3>Rule 10.4 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Both operands of an operator using the usual arithmetic conversions must have the same essential type category.</p>
+<pre class="code"><code>uint32_t u; int32_t s; <span class="k">if</span> (u &gt; s) {}   <span class="c">/* Non-compliant: <span class="k">unsigned</span> vs <span class="k">signed</span> */</span></code></pre>
+<h3>Rule 10.5 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A value should not be cast to an inappropriate essential type.</p>
+<pre class="code"><code>(bool)3.0f;    <span class="c">/* Non-compliant: floating cast to bool */</span></code></pre>
+<h3>Rule 10.6 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The value of a composite expression must not be assigned to an object with wider essential type.</p>
+<pre class="code"><code>uint16_t a,b; uint32_t r = a + b;   <span class="c">/* Non-compliant: a+b is 16-bit composite */</span>
+uint32_t r = (uint32_t)a + b;       <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 10.7 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> If a composite expression is one operand where usual arithmetic conversions apply, the other operand must not have wider essential type.</p>
+<h3>Rule 10.8 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The value of a composite expression must not be cast to a different essential type category or a wider essential type.</p>
+<hr>
+<h2>§11 — Pointer type conversions</h2>
+<h3>Rule 11.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Conversions must not be performed between a function pointer and any other type.</p>
+<pre class="code"><code><span class="k">void</span> (*fp)(<span class="k">void</span>) = (<span class="k">void</span>(*)(<span class="k">void</span>))0x8000;  <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 11.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Conversions must not be performed between a pointer to an incomplete type and any other type.</p>
+<h3>Rule 11.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A cast must not be performed between a pointer to object type and a pointer to a different object type.</p>
+<pre class="code"><code>uint8_t *p; uint32_t *q = (uint32_t*)p;   <span class="c">/* Non-compliant: alignment/aliasing risk */</span></code></pre>
+<h3>Rule 11.4 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A conversion should not be performed between a pointer to object and an integer type.</p>
+<pre class="code"><code>uintptr_t a = (uintptr_t)ptr;   <span class="c">/* Non-compliant (advisory): document <span class="k">if</span> required */</span></code></pre>
+<h3>Rule 11.5 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A conversion should not be performed from pointer to <code>void</code> into pointer to object.</p>
+<h3>Rule 11.6 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A cast must not be performed between pointer to <code>void</code> and an arithmetic type.</p>
+<h3>Rule 11.7 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A cast must not be performed between pointer to object and a non-integer arithmetic type.</p>
+<h3>Rule 11.8 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A cast must not remove <code>const</code>/<code>volatile</code> qualification from the pointed-to type.</p>
+<pre class="code"><code><span class="k">const</span> <span class="k">int</span> *cp; <span class="k">int</span> *p = (<span class="k">int</span>*)cp;   <span class="c">/* Non-compliant: casts away <span class="k">const</span> */</span></code></pre>
+<h3>Rule 11.9 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The macro <code>NULL</code> must be the only permitted form of integer null pointer constant.</p>
+<pre class="code"><code><span class="k">int</span> *p = 0;      <span class="c">/* Non-compliant */</span>
+<span class="k">int</span> *p = NULL;   <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 11.10 — Required ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> The <code>_Atomic</code> qualifier must not be applied to incomplete <code>void</code>.</p>
+</section>
+<section id="misra-c-2023-rules-12-16" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Rules §12–§16 (in depth)</h1>
+<p>Each entry: <strong>ID — Category · Decidability · Scope</strong>, paraphrased guideline, rationale, and examples.</p>
+<hr>
+<h2>§12 — Expressions</h2>
+<h3>Rule 12.1 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Operator precedence within expressions should be made explicit.</p>
+<pre class="code"><code>x = a + b &lt;&lt; c;         <span class="c">/* Non-compliant: is it (a+b)&lt;&lt;c ? */</span>
+x = (a + b) &lt;&lt; c;       <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 12.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The right operand of a shift must lie in 0 .. (bit-width of left − 1).</p>
+<pre class="code"><code>uint16_t v; v = v &lt;&lt; 20;    <span class="c">/* Non-compliant: shift &gt;= width is UB */</span></code></pre>
+<h3>Rule 12.3 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The comma operator should not be used.</p>
+<pre class="code"><code><span class="k">for</span> (i=0, j=n; i&lt;j; i++, j--)   <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 12.4 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Evaluation of constant expressions should not lead to unsigned integer wrap-around.</p>
+<pre class="code"><code>uint16_t x = 0xFFFFu + 1u;   <span class="c">/* Non-compliant: wraps to 0 */</span></code></pre>
+<h3>Rule 12.5 — Mandatory · Decidable · Single TU <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> <code>sizeof</code> must not have an operand that is a function parameter declared as &quot;array of type&quot;. <strong>No deviation permitted.</strong></p>
+<pre class="code"><code><span class="k">void</span> f(<span class="k">int</span> a[10]){ size_t n = <span class="k">sizeof</span>(a); }  <span class="c">/* Non-compliant: a is a pointer, <span class="k">sizeof</span>==ptr size */</span></code></pre>
+<hr>
+<h2>§13 — Side effects</h2>
+<h3>Rule 13.1 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> Initializer lists must not contain persistent side effects.</p>
+<pre class="code"><code><span class="k">int</span> a[2] = { i++, i++ };   <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 13.2 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> An expression&#x27;s value and side effects must be identical under all permitted evaluation orders.</p>
+<pre class="code"><code>y = f() + g();   <span class="c">/* Non-compliant <span class="k">if</span> f and g share/modify state */</span></code></pre>
+<h3>Rule 13.3 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A full expression with <code>++</code>/<code>--</code> should have no other potential side effects.</p>
+<pre class="code"><code>x = a++ + b--;   <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 13.4 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The result of an assignment operator should not be used.</p>
+<pre class="code"><code><span class="k">if</span> ((x = get()) != 0) {}   <span class="c">/* Non-compliant */</span>
+x = get(); <span class="k">if</span> (x != 0) {}  <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 13.5 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> The right operand of <code>&amp;&amp;</code>/<code>||</code> must not contain persistent side effects.</p>
+<pre class="code"><code><span class="k">if</span> (ok &amp;&amp; (count++ &gt; 0)) {}   <span class="c">/* Non-compliant: count++ may not run */</span></code></pre>
+<h3>Rule 13.6 — Mandatory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The operand of <code>sizeof</code> must not contain any expression with potential side effects. <strong>No deviation permitted.</strong></p>
+<pre class="code"><code>n = <span class="k">sizeof</span>(a[i++]);   <span class="c">/* Non-compliant: i++ not evaluated */</span></code></pre>
+<hr>
+<h2>§14 — Control statement expressions</h2>
+<h3>Rule 14.1 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> A loop counter must not have essentially floating type.</p>
+<pre class="code"><code><span class="k">for</span> (<span class="k">float</span> f=0.0f; f!=1.0f; f+=0.1f) {}   <span class="c">/* Non-compliant: never exactly 1.0 */</span></code></pre>
+<h3>Rule 14.2 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> A <code>for</code> loop must be well-formed (single counter, clear init/cond/ step, counter not modified in body).</p>
+<h3>Rule 14.3 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> Controlling expressions must not be invariant.</p>
+<pre class="code"><code><span class="k">if</span> (<span class="k">sizeof</span>(<span class="k">int</span>) &gt; 0) {}   <span class="c">/* Non-compliant: always true */</span></code></pre>
+<h3>Rule 14.4 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The controlling expression of <code>if</code>/iteration must have essentially Boolean type.</p>
+<pre class="code"><code><span class="k">int</span> p; <span class="k">if</span> (p) {}          <span class="c">/* Non-compliant */</span>
+<span class="k">int</span> p; <span class="k">if</span> (p != 0) {}     <span class="c">/* Compliant */</span></code></pre>
+<hr>
+<h2>§15 — Control flow</h2>
+<h3>Rule 15.1 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>goto</code> should not be used.</p>
+<h3>Rule 15.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>goto</code> must jump to a label later in the same function.</p>
+<pre class="code"><code>loop: ... <span class="k">goto</span> loop;   <span class="c">/* Non-compliant: backward jump */</span></code></pre>
+<h3>Rule 15.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A label referenced by <code>goto</code> must be in the same or an enclosing block of the <code>goto</code>.</p>
+<h3>Rule 15.4 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> No more than one <code>break</code>/<code>goto</code> should terminate any iteration statement.</p>
+<h3>Rule 15.5 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A function should have a single point of exit at the end.</p>
+<pre class="code"><code><span class="k">int</span> f(<span class="k">int</span> x){ <span class="k">if</span>(x) <span class="k">return</span> 1; <span class="k">return</span> 0; }   <span class="c">/* Non-compliant: two returns */</span></code></pre>
+<h3>Rule 15.6 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The body of an iteration/selection statement must be a compound statement <code>{ }</code>.</p>
+<pre class="code"><code><span class="k">if</span> (x) y = 1;              <span class="c">/* Non-compliant */</span>
+<span class="k">if</span> (x) { y = 1; }         <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 15.7 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> All <code>if ... else if</code> chains must terminate with an <code>else</code>.</p>
+<pre class="code"><code><span class="k">if</span> (a) {} <span class="k">else</span> <span class="k">if</span> (b) {}              <span class="c">/* Non-compliant */</span>
+<span class="k">if</span> (a) {} <span class="k">else</span> <span class="k">if</span> (b) {} <span class="k">else</span> {}     <span class="c">/* Compliant */</span></code></pre>
+<hr>
+<h2>§16 — Switch statements</h2>
+<h3>Rule 16.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> All <code>switch</code> statements must be well-formed (per rules 16.2–16.7).</p>
+<h3>Rule 16.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A switch label must only appear when the enclosing compound statement is the switch body (no Duff&#x27;s-device-style labels).</p>
+<h3>Rule 16.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> An unconditional <code>break</code> must terminate every switch-clause.</p>
+<pre class="code"><code><span class="k">case</span> 1: x=1;            <span class="c">/* Non-compliant: falls through */</span>
+<span class="k">case</span> 1: x=1; <span class="k">break</span>;     <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 16.4 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Every <code>switch</code> must have a <code>default</code> label.</p>
+<h3>Rule 16.5 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A <code>default</code> label must be the first or last switch label.</p>
+<h3>Rule 16.6 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Every <code>switch</code> must have at least two switch-clauses. <strong>Rationale:</strong> A one-clause switch should be an <code>if</code>.</p>
+<h3>Rule 16.7 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A switch-expression must not have essentially Boolean type (use <code>if</code>/<code>else</code>).</p>
+</section>
+<section id="misra-c-2023-rules-17-19" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Rules §17–§19 (in depth)</h1>
+<p>Each entry: <strong>ID — Category · Decidability · Scope</strong>, paraphrased guideline, rationale, and examples. <code>⚑verify</code> = confirm against the official standard.</p>
+<hr>
+<h2>§17 — Functions</h2>
+<h3>Rule 17.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The features of <code>&lt;stdarg.h&gt;</code> (<code>va_list</code>, <code>va_start</code>, …) must not be used. <strong>Rationale:</strong> Variadic functions bypass type checking.</p>
+<h3>Rule 17.2 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> Functions must not call themselves, directly or indirectly. <strong>Rationale:</strong> Recursion makes stack usage unbounded/unanalysable.</p>
+<pre class="code"><code><span class="k">int</span> fact(<span class="k">int</span> n){ <span class="k">return</span> n?n*fact(n-1):1; }   <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 17.3 — Mandatory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A function must not be declared implicitly. <strong>No deviation.</strong></p>
+<pre class="code"><code>y = foo();   <span class="c">/* Non-compliant <span class="k">if</span> no prototype <span class="k">for</span> foo is visible */</span></code></pre>
+<h3>Rule 17.4 — Mandatory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> All exit paths from a non-<code>void</code> function must have an explicit <code>return</code> with an expression. <strong>No deviation.</strong></p>
+<pre class="code"><code><span class="k">int</span> f(<span class="k">int</span> x){ <span class="k">if</span>(x) <span class="k">return</span> 1; }   <span class="c">/* Non-compliant: falls off the end */</span></code></pre>
+<h3>Rule 17.5 — Advisory · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> The argument for a parameter declared with an array type must have an appropriate number of elements.</p>
+<h3>Rule 17.6 — Mandatory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> An array parameter declaration must not contain <code>static</code> between the <code>[ ]</code>. <strong>No deviation.</strong></p>
+<pre class="code"><code><span class="k">void</span> f(<span class="k">int</span> a[<span class="k">static</span> 10]);   <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 17.7 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The value returned by a non-<code>void</code> function must be used.</p>
+<pre class="code"><code>foo();               <span class="c">/* Non-compliant <span class="k">if</span> foo returns a value */</span>
+(<span class="k">void</span>)foo();         <span class="c">/* Compliant: explicitly discarded */</span></code></pre>
+<h3>Rule 17.8 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A function parameter should not be modified.</p>
+<pre class="code"><code><span class="k">void</span> f(<span class="k">int</span> n){ n++; use(n); }        <span class="c">/* Non-compliant */</span>
+<span class="k">void</span> f(<span class="k">int</span> n){ <span class="k">int</span> m=n+1; use(m); }  <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 17.9 — Mandatory ⚑verify <em>(AMD2, C11)</em></h3>
+<p><strong>Guideline:</strong> A <code>_Noreturn</code> function must not return to its caller.</p>
+<h3>Rule 17.10 — Required ⚑verify <em>(AMD2)</em></h3>
+<p><strong>Guideline:</strong> A <code>_Noreturn</code> function must have <code>void</code> return type.</p>
+<h3>Rule 17.11 — Advisory ⚑verify <em>(AMD2)</em></h3>
+<p><strong>Guideline:</strong> A function that never returns should be declared <code>_Noreturn</code>.</p>
+<h3>Rule 17.12 — Advisory ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> A function identifier should be used only with <code>&amp;</code> or a parenthesised argument list.</p>
+<h3>Rule 17.13 — Required ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> A function type must not be type qualified.</p>
+<hr>
+<h2>§18 — Pointers and arrays</h2>
+<h3>Rule 18.1 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> A pointer from arithmetic on a pointer operand must address an element of the same array.</p>
+<pre class="code"><code><span class="k">int</span> a[10]; <span class="k">int</span> *p = &amp;a[0] + 11;   <span class="c">/* Non-compliant: out of bounds */</span></code></pre>
+<h3>Rule 18.2 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> Pointer subtraction must only apply to pointers into the same array.</p>
+<h3>Rule 18.3 — Required · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code> must not be applied to pointers unless they point into the same object.</p>
+<h3>Rule 18.4 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>+</code>, <code>-</code>, <code>+=</code>, <code>-=</code> should not be applied to pointer expressions (prefer array indexing).</p>
+<pre class="code"><code>p += 1;      <span class="c">/* Non-compliant (advisory) */</span>
+x = p[1];    <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 18.5 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Declarations should contain no more than two levels of pointer nesting.</p>
+<pre class="code"><code><span class="k">int</span> ***p;    <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 18.6 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> The address of an object with automatic storage must not be copied to an object that persists after it ceases to exist.</p>
+<pre class="code"><code><span class="k">int</span> *g;
+<span class="k">void</span> f(<span class="k">void</span>){ <span class="k">int</span> local; g = &amp;local; }   <span class="c">/* Non-compliant: dangling after <span class="k">return</span> */</span></code></pre>
+<h3>Rule 18.7 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Flexible array members must not be declared.</p>
+<pre class="code"><code><span class="k">struct</span> S { <span class="k">int</span> n; <span class="k">int</span> data[]; };   <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 18.8 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Variable-length array types must not be used.</p>
+<pre class="code"><code><span class="k">void</span> f(<span class="k">int</span> n){ <span class="k">int</span> a[n]; }   <span class="c">/* Non-compliant: VLA */</span></code></pre>
+<h3>Rule 18.9 — Required ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> The address of an object with temporary lifetime must not outlive it.</p>
+<h3>Rule 18.10 — Mandatory ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> Pointers to variably-modified array types must not be used.</p>
+<hr>
+<h2>§19 — Overlapping storage</h2>
+<h3>Rule 19.1 — Mandatory · Undecidable · System</h3>
+<p><strong>Guideline:</strong> An object must not be assigned or copied to an overlapping object. <strong>No deviation.</strong></p>
+<pre class="code"><code>memcpy(&amp;buf[0], &amp;buf[1], 4);   <span class="c">/* Non-compliant: overlapping */</span></code></pre>
+<h3>Rule 19.2 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The <code>union</code> keyword should not be used. <strong>Rationale:</strong> Reading a member other than the last written is unspecified/UB.</p>
+</section>
+<section id="misra-c-2023-rules-20" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Rules §20 (Preprocessing directives, in depth)</h1>
+<p>Each entry: <strong>ID — Category · Decidability · Scope</strong>, paraphrased guideline, rationale, and examples.</p>
+<hr>
+<h3>Rule 20.1 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>#include</code> directives should only be preceded by preprocessor directives or comments. <strong>Rationale:</strong> Keeps include order predictable and header effects at the top.</p>
+<h3>Rule 20.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The <code>&#x27;</code>, <code>&quot;</code>, <code>\</code> characters and the <code>/*</code>, <code>//</code> sequences must not occur in a header file name.</p>
+<pre class="code"><code>#include &quot;sub\dir\h.h&quot;   <span class="c">/* Non-compliant: \ is UB in header name */</span>
+#include &quot;sub/dir/h.h&quot;   <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 20.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>#include</code> must be followed by <code>&lt;filename&gt;</code> or <code>&quot;filename&quot;</code>.</p>
+<h3>Rule 20.4 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A macro must not be defined with the same name as a keyword.</p>
+<pre class="code"><code>#define <span class="k">const</span>   <span class="c">/* Non-compliant */</span></code></pre>
+<h3>Rule 20.5 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>#undef</code> should not be used. <strong>Rationale:</strong> <code>#undef</code> obscures which definition of a macro is in force.</p>
+<h3>Rule 20.6 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Tokens that look like a preprocessing directive must not occur within a macro argument.</p>
+<pre class="code"><code>FN(
+#include &quot;x.h&quot;   <span class="c">/* Non-compliant */</span>
+)</code></pre>
+<h3>Rule 20.7 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> Expressions resulting from expansion of macro parameters must be enclosed in parentheses.</p>
+<pre class="code"><code>#define SQ(x) x*x            <span class="c">/* Non-compliant: SQ(a+b) -&gt; a+b*a+b */</span>
+#define SQ(x) ((x)*(x))      <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 20.8 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The controlling expression of <code>#if</code>/<code>#elif</code> must evaluate to 0 or 1.</p>
+<h3>Rule 20.9 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> All identifiers in a <code>#if</code>/<code>#elif</code> controlling expression must be <code>#define</code>d before evaluation.</p>
+<pre class="code"><code>#<span class="k">if</span> FEATURE_X            <span class="c">/* Non-compliant <span class="k">if</span> FEATURE_X may be undefined */</span>
+#<span class="k">if</span> defined(FEATURE_X) &amp;&amp; (FEATURE_X == 1)   <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 20.10 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The <code>#</code> and <code>##</code> preprocessor operators should not be used. <strong>Rationale:</strong> Stringisation/token-pasting are hard to read and error-prone.</p>
+<h3>Rule 20.11 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A macro parameter immediately after <code>#</code> must not be immediately followed by <code>##</code>.</p>
+<h3>Rule 20.12 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A macro parameter used with <code>#</code>/<code>##</code>, and itself subject to further replacement, must only be used as an operand to these operators.</p>
+<h3>Rule 20.13 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A line whose first token is <code>#</code> must be a valid preprocessing directive.</p>
+<h3>Rule 20.14 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> All <code>#else</code>, <code>#elif</code>, <code>#endif</code> must reside in the same file as the <code>#if</code>/<code>#ifdef</code>/<code>#ifndef</code> they relate to.</p>
+</section>
+<section id="misra-c-2023-rules-21-22" class="doc-section">
+<div class="section-eyebrow">MISRA C</div>
+<h1>MISRA C:2023 — Rules §21–§22 (in depth)</h1>
+<p>Each entry: <strong>ID — Category · Decidability · Scope</strong>, paraphrased guideline, rationale, and examples. Sections 21–22 were heavily extended by Amendments 1–3 (security, C11). Amendment-added entries are marked <code>⚑verify</code>.</p>
+<hr>
+<h2>§21 — Standard libraries</h2>
+<h3>Rule 21.1 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>#define</code>/<code>#undef</code> must not be used on a reserved identifier/macro.</p>
+<pre class="code"><code>#define _MYGUARD   <span class="c">/* Non-compliant: leading underscore reserved */</span></code></pre>
+<h3>Rule 21.2 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> A reserved identifier or reserved macro name must not be declared.</p>
+<h3>Rule 21.3 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The memory allocation/deallocation functions of <code>&lt;stdlib.h&gt;</code> (<code>malloc</code>, <code>calloc</code>, <code>realloc</code>, <code>free</code>) must not be used. <strong>Rationale:</strong> Dynamic allocation risks fragmentation, leaks, and non-determinism (see Dir 4.12).</p>
+<h3>Rule 21.4 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>&lt;setjmp.h&gt;</code> must not be used.</p>
+<h3>Rule 21.5 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>&lt;signal.h&gt;</code> must not be used.</p>
+<h3>Rule 21.6 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The Standard Library I/O functions (<code>&lt;stdio.h&gt;</code>, wide I/O) must not be used.</p>
+<h3>Rule 21.7 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>atof</code>, <code>atoi</code>, <code>atol</code>, <code>atoll</code> must not be used. <strong>Rationale:</strong> No error reporting on malformed input; use <code>strtol</code> family.</p>
+<h3>Rule 21.8 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>abort</code>, <code>exit</code>, <code>getenv</code> (and <code>system</code>) of <code>&lt;stdlib.h&gt;</code> must not be used. <em>(scope adjusted by AMD; `system` split to 21.21)</em></p>
+<h3>Rule 21.9 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>bsearch</code> and <code>qsort</code> of <code>&lt;stdlib.h&gt;</code> must not be used.</p>
+<h3>Rule 21.10 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The date/time functions of <code>&lt;time.h&gt;</code> (and <code>wcsftime</code>) must not be used.</p>
+<h3>Rule 21.11 — Required · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> <code>&lt;tgmath.h&gt;</code> must not be used. <em>(⚑verify — some editions relax to Advisory)</em></p>
+<h3>Rule 21.12 — Advisory · Decidable · Single TU</h3>
+<p><strong>Guideline:</strong> The exception-handling features of <code>&lt;fenv.h&gt;</code> should not be used. <em>(⚑verify — AMD3 may widen)</em></p>
+<h3>Rule 21.13 — Mandatory · Decidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> Any value passed to a <code>&lt;ctype.h&gt;</code> function must be representable as <code>unsigned char</code> or equal <code>EOF</code>. <strong>No deviation.</strong></p>
+<pre class="code"><code><span class="k">char</span> c = fgetc_result; isdigit(c);      <span class="c">/* Non-compliant <span class="k">if</span> <span class="k">char</span> is <span class="k">signed</span> &amp; negative */</span>
+isdigit((<span class="k">unsigned</span> <span class="k">char</span>)c);              <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 21.14 — Required · Decidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> <code>memcmp</code> must not be used to compare null-terminated strings.</p>
+<h3>Rule 21.15 — Required · Decidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> The pointer arguments to <code>memcpy</code>, <code>memmove</code>, <code>memcmp</code> must be pointers to compatible types.</p>
+<h3>Rule 21.16 — Required · Decidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> The pointer arguments to <code>memcmp</code> must point to appropriate essential types (not e.g. floating or struct with padding).</p>
+<h3>Rule 21.17 — Mandatory · Undecidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> Use of <code>&lt;string.h&gt;</code> functions must not access beyond the bounds of the referenced objects. <strong>No deviation.</strong></p>
+<h3>Rule 21.18 — Mandatory · Undecidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> The <code>size_t</code> argument to a <code>&lt;string.h&gt;</code> function must have an appropriate value. <strong>No deviation.</strong></p>
+<h3>Rule 21.19 — Mandatory · Decidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> Pointers returned by <code>localeconv</code>, <code>getenv</code>, <code>setlocale</code>, <code>strerror</code> must be treated as pointer to const.</p>
+<h3>Rule 21.20 — Mandatory · Decidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> The pointer returned by certain library functions must not be used after a subsequent call to the same function.</p>
+<h3>Rule 21.21 — Required · Decidable · Single TU ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> <code>system</code> of <code>&lt;stdlib.h&gt;</code> must not be used.</p>
+<h3>Rule 21.22–21.26 — ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> Type-generic math (<code>&lt;tgmath.h&gt;</code>) and C11 atomics/memory-ordering/ thread-local constraints.</p>
+<hr>
+<h2>§22 — Resources</h2>
+<h3>Rule 22.1 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> All resources obtained via Standard Library functions must be explicitly released.</p>
+<pre class="code"><code>FILE *f = fopen(&quot;x&quot;,&quot;r&quot;); <span class="c">/* ... */</span>    <span class="c">/* Non-compliant <span class="k">if</span> never fclose(f) */</span></code></pre>
+<h3>Rule 22.2 — Mandatory · Undecidable · System</h3>
+<p><strong>Guideline:</strong> A block of memory must only be freed if it was allocated by a Standard Library function. <strong>No deviation.</strong></p>
+<pre class="code"><code><span class="k">int</span> a[4]; free(a);   <span class="c">/* Non-compliant: a not heap-allocated */</span></code></pre>
+<h3>Rule 22.3 — Required · Undecidable · System</h3>
+<p><strong>Guideline:</strong> The same file must not be open for read and write on different streams at the same time.</p>
+<h3>Rule 22.4 — Mandatory · Undecidable · System</h3>
+<p><strong>Guideline:</strong> There must be no attempt to write to a stream opened read-only. <strong>No deviation.</strong></p>
+<h3>Rule 22.5 — Mandatory · Undecidable · Single TU</h3>
+<p><strong>Guideline:</strong> A pointer to a <code>FILE</code> must not be dereferenced. <strong>No deviation.</strong></p>
+<h3>Rule 22.6 — Mandatory · Undecidable · System</h3>
+<p><strong>Guideline:</strong> A <code>FILE</code> pointer must not be used after the stream is closed. <strong>No deviation.</strong></p>
+<pre class="code"><code>fclose(f); fprintf(f,&quot;x&quot;);   <span class="c">/* Non-compliant: use after close */</span></code></pre>
+<h3>Rule 22.7 — Required · Decidable · Single TU ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> <code>EOF</code> must only be compared with the unmodified return value of a library function capable of returning <code>EOF</code>.</p>
+<h3>Rule 22.8 — Required · Undecidable · System ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> <code>errno</code> must be set to zero before a call to an errno-setting function.</p>
+<h3>Rule 22.9 — Required · Undecidable · System ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> <code>errno</code> must be tested after calling an errno-setting function.</p>
+<pre class="code"><code>errno = 0; v = strtol(s,&amp;e,10); <span class="k">if</span> (errno != 0) { <span class="c">/* handle */</span> }   <span class="c">/* Compliant */</span></code></pre>
+<h3>Rule 22.10 — Required · Undecidable · System ⚑verify <em>(AMD1)</em></h3>
+<p><strong>Guideline:</strong> <code>errno</code> must only be tested when the last function called was an errno-setting function.</p>
+<h3>Rule 22.11–22.20 — ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> C11 threads/concurrency (<code>&lt;threads.h&gt;</code>): mutexes, condition variables, and thread-specific storage — creation, ownership, and release constraints.</p>
+</section>
+<section id="misra-c-2023-overview" class="doc-section">
+<div class="section-eyebrow">MISRA C++</div>
+<h1>MISRA C++:2023 — Overview</h1>
+<p>MISRA C++:2023 is a <strong>complete rewrite</strong> of the C++ guidelines, replacing MISRA C++:2008. It targets <strong>ISO C++17</strong> and aligns closely with the AUTOSAR C++14 guidelines (which it effectively absorbs and supersedes).</p>
+<ul>
+<li><strong>179 guidelines total</strong> = <strong>4 directives</strong> + <strong>175 rules</strong>.</li>
+<li>Each guideline has a <strong>category</strong> and a <strong>decidability</strong>, same scheme as C.</li>
+<li>The <strong>section numbering mirrors the ISO C++ standard&#x27;s clause structure</strong>, so a</li>
+</ul>
+<p>  rule ID like <code>Rule 6.7.2</code> sits under the C++ clause on the same topic.</p>
+<h2>Categories</h2>
+<p>Same three-tier scheme as MISRA C:</p>
+<div class="tablewrap"><table><thead><tr><th>Category</th><th>Deviations</th></tr></thead><tbody><tr><td>Mandatory</td><td>Never permitted</td></tr><tr><td>Required</td><td>Permitted only with a formal record</td></tr><tr><td>Advisory</td><td>Permitted; recording recommended</td></tr></tbody></table></div>
+<p>C++:2023 also classifies each guideline&#x27;s analysis as <strong>Decidable</strong> or <strong>Undecidable</strong>, and by scope (<strong>Single Translation Unit</strong> or <strong>System</strong>), just like MISRA C.</p>
+<h2>Guideline ID scheme</h2>
+<p>MISRA C++:2023 rules use a <strong>three-part number</strong> derived from the C++ standard&#x27;s clause layout: <code>Rule &lt;clause&gt;.&lt;subclause&gt;.&lt;index&gt;</code> (e.g. <code>Rule 8.2.3</code>). Directives use <code>Dir &lt;n&gt;.&lt;n&gt;.&lt;n&gt;</code>. This differs from MISRA C&#x27;s two-part <code>Rule S.N</code> scheme — do not assume a C rule number maps to the same C++ number.</p>
+<h2>Section structure (mirrors ISO C++17 clauses)</h2>
+<p>The rules are grouped under sections corresponding to the C++ standard, broadly:</p>
+<div class="tablewrap"><table><thead><tr><th>Area</th><th>Typical clause topic</th></tr></thead><tbody><tr><td>General / language independent</td><td>Character sets, program structure</td></tr><tr><td>Lexical conventions</td><td>Identifiers, literals, comments</td></tr><tr><td>Basic concepts</td><td>Declarations, scope, storage duration, ODR</td></tr><tr><td>Standard conversions</td><td>Implicit conversions, integral/pointer conversions</td></tr><tr><td>Expressions</td><td>Operators, casts, <code>sizeof</code>, order of evaluation</td></tr><tr><td>Statements</td><td>Selection, iteration, jump, <code>switch</code></td></tr><tr><td>Declarations</td><td><code>const</code>/<code>constexpr</code>, <code>auto</code>, type specifiers</td></tr><tr><td>Declarators</td><td>Pointers, references, function declarators</td></tr><tr><td>Classes</td><td>Members, access, special member functions</td></tr><tr><td>Derived classes</td><td>Inheritance, virtual functions</td></tr><tr><td>Overloading</td><td>Operator/function overloading, conversions</td></tr><tr><td>Templates</td><td>Template parameters, instantiation, specialization</td></tr><tr><td>Exception handling</td><td><code>throw</code>, <code>catch</code>, <code>noexcept</code>, stack unwinding</td></tr><tr><td>Preprocessor</td><td>Macros, <code>#include</code>, conditional compilation</td></tr><tr><td>Library introduction / usage</td><td>Use of the C++ standard library</td></tr></tbody></table></div>
+<blockquote>The exact clause names, per-clause rule counts, and every rule ID must be confirmed against the official MISRA C++:2023 document — see the note below.</blockquote>
+<h2>⚠️ Enumeration status — important</h2>
+<p>Unlike the MISRA C bundle (whose rule list is stable and long-established via C:2012), the <strong>verbatim per-rule identifiers of MISRA C++:2023 could not be grounded</strong> in this build: the authoritative reference lists are blocked by the environment&#x27;s network policy, the standard is copyright-protected, and the reachable community sources use the <em>old</em> MISRA C++:2008 hyphenated numbering (<code>5-0-1</code>) rather than the 2023 dotted scheme (<code>8.2.3</code>), so they are unsafe to copy.</p>
+<p>The <code>cpp/rules/</code> files therefore provide <strong>comprehensive thematic coverage</strong> — every ISO C++17 clause area, with rationale and compliant/non-compliant examples per guideline — but with each entry marked <code>⚑verify</code>. Treat this as a complete <strong>engineering reference</strong>; treat the official standard as the authority for the exact IDs/categories needed in a <strong>formal compliance matrix</strong>.</p>
+<p>To pin the exact <code>Rule x.y.z</code> identifiers, provide <strong>any one</strong> of:</p>
+<ul>
+<li>the official MISRA C++:2023 PDF (place it in the repo; I&#x27;ll paraphrase it), or</li>
+<li>a plain-text/CSV list of the rule IDs + titles, or</li>
+<li>an unblocked reference page listing them.</li>
+</ul>
+</section>
+<section id="misra-c-2023-directives" class="doc-section">
+<div class="section-eyebrow">MISRA C++</div>
+<h1>MISRA C++:2023 — Directives</h1>
+<p>MISRA C++:2023 defines <strong>4 directives</strong> — guidance requiring information beyond the source code (process, documentation, design). The exact IDs and wording below should be confirmed against the official standard (<code>⚑verify</code>).</p>
+<ul>
+<li><strong>Dir (implementation behaviour)</strong> — <em>(Required)</em> ⚑verify — Any use of</li>
+</ul>
+<p>  implementation-defined behaviour on which the program&#x27;s output depends must be   documented and understood. <em>(analogue of MISRA C Dir 1.1)</em></p>
+<ul>
+<li><strong>Dir (traceability)</strong> — <em>(Required)</em> ⚑verify — Code should be traceable to</li>
+</ul>
+<p>  documented requirements. <em>(analogue of MISRA C Dir 3.1)</em></p>
+<ul>
+<li><strong>Dir (run-time failure)</strong> — <em>(Required)</em> ⚑verify — Run-time failures should be</li>
+</ul>
+<p>  minimized / handled. <em>(analogue of MISRA C Dir 4.1)</em></p>
+<ul>
+<li><strong>Dir (documentation of design intent)</strong> — <em>(Advisory)</em> ⚑verify — Design intent</li>
+</ul>
+<p>  that cannot be expressed in code (e.g. rationale for permitted deviations,   encapsulation choices) should be documented.</p>
+<blockquote>These four map conceptually to the MISRA C directive families but the official C++:2023 numbering and precise text differ. Verify before formal use.</blockquote>
+</section>
+<section id="misra-c-2023-rules" class="doc-section">
+<div class="section-eyebrow">MISRA C++</div>
+<h1>MISRA C++:2023 — Rules (comprehensive, in depth)</h1>
+<blockquote><strong>Coverage &amp; accuracy.</strong> This file gives <strong>comprehensive thematic coverage</strong> of MISRA C++:2023, organized under the <strong>ISO C++17 clause areas</strong> the standard&#x27;s section numbering mirrors, with rationale and compliant/non-compliant C++ for each guideline. Every entry is marked <code>⚑verify</code>: the <em>guidance</em> reflects long-established MISRA C++ / AUTOSAR C++14 practice, but the <strong>exact rule IDs, categories, and official wording of MISRA C++:2023 must be confirmed against the purchased standard</strong> — its per-rule identifiers (dotted, e.g. <code>Rule 8.2.3</code>) could not be grounded in this build environment (authoritative lists are copyright- protected / network-blocked). Use this as an engineering reference; use the official document for a formal compliance matrix. See <code>../overview.md</code>.</blockquote>
+<p>Legend: category shown as <em>(Mandatory / Required / Advisory)</em>.</p>
+<hr>
+<h2>1. General &amp; lexical conventions</h2>
+<ul>
+<li><strong>Trigraphs and digraphs must not be used.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>The `/*` and `//` sequences must not appear within a comment.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span <span class="k">class</span>="c">/* a /* b */</span> c;   <span <span class="k">class</span>="c">// Non-compliant: &#x27;c;&#x27; is live code</span></code></pre>
+<ul>
+<li><strong>Each expression statement / declaration should be on its own line.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>Literal suffixes must be uppercase (`L`, `U`, `LL`).</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">auto</span> n = 100l;   <span <span class="k">class</span>="c">// Non-compliant     <span class="k">auto</span> n = 100L;  // Compliant</span></code></pre>
+<ul>
+<li><strong>Octal constants (other than `0`) and octal escape sequences must not be used.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>User-defined literals should be used only where they improve clarity.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>A character/string literal must not be modified.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<h2>2. Identifiers &amp; naming</h2>
+<ul>
+<li><strong>Identifiers must not be reused across scopes so as to shadow/hide.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">int</span> count;
+<span class="k">void</span> f(){ <span class="k">int</span> count = 0; }   <span <span class="k">class</span>="c">// Non-compliant: hides outer &#x27;count&#x27;</span></code></pre>
+<ul>
+<li><strong>An identifier must not be reused for different entities in different name spaces confusingly.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Identifiers should be distinct in a typographically unambiguous way</strong> (avoid <code>l</code>/<code>1</code>, <code>O</code>/<code>0</code>). <em>(Advisory)</em> ⚑verify</li>
+<li><strong>Macro names must be reserved-safe and distinct from other identifiers.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<h2>3. Basic concepts (declarations, scope, ODR, storage duration, lifetime)</h2>
+<ul>
+<li><strong>Every entity must have exactly one definition (ODR).</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>An object must be initialized before its value is read.</strong> <em>(Mandatory)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">int</span> x; use(x);        <span <span class="k">class</span>="c">// Non-compliant</span>
+<span class="k">int</span> x{0}; use(x);     <span <span class="k">class</span>="c">// Compliant (brace-init also prevents narrowing)</span></code></pre>
+<ul>
+<li>**Declare each variable in the narrowest practical scope, initialized at</li>
+</ul>
+<p>  declaration.*<em> </em>(Advisory)* ⚑verify</p>
+<ul>
+<li><strong>The static initialization-order fiasco must be avoided</strong> (no cross-TU</li>
+</ul>
+<p>  dependency between dynamically-initialized namespace-scope objects). <em>(Required)</em> ⚑verify</p>
+<pre class="code"><code><span <span class="k">class</span>="c">// Compliant: function-local <span class="k">static</span>, initialized on first use</span>
+Config&amp; config(){ <span class="k">static</span> Config c; <span class="k">return</span> c; }</code></pre>
+<ul>
+<li><strong>An object&#x27;s address must not be used outside its lifetime</strong> (no dangling). <em>(Required)</em> ⚑verify</li>
+<li><strong>`thread_local` storage must be used deliberately and documented.</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<h2>4. Standard conversions</h2>
+<ul>
+<li><strong>Implicit conversions that lose value/precision (narrowing) must not occur.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">int</span> i = 300; <span class="k">char</span> c = i;             <span <span class="k">class</span>="c">// Non-compliant: narrowing</span>
+<span class="k">char</span> c{ static_cast&lt;<span class="k">char</span>&gt;(i) };      <span <span class="k">class</span>="c">// Compliant: <span class="k">explicit</span></span></code></pre>
+<ul>
+<li><strong>`const`/`volatile` qualification must not be cast away.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Pointer↔integer conversions should be avoided.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>A null pointer must be written `nullptr`, never `0` or `NULL`.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">int</span>* p = NULL;      <span <span class="k">class</span>="c">// Non-compliant</span>
+<span class="k">int</span>* p = <span class="k">nullptr</span>;   <span <span class="k">class</span>="c">// Compliant</span></code></pre>
+<ul>
+<li><strong>An array must not decay to a pointer where the size is needed</strong> (prefer</li>
+</ul>
+<p>  <code>std::array</code>/<code>std::span</code>). <em>(Advisory)</em> ⚑verify</p>
+<h2>5. Expressions</h2>
+<ul>
+<li><strong>Operator precedence should be made explicit with parentheses.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>The comma operator must not be used.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Evaluation must not depend on unspecified order of evaluation.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code>y = f() + g();   <span <span class="k">class</span>="c">// Non-compliant <span class="k">if</span> f/g share mutable state</span></code></pre>
+<ul>
+<li><strong>C-style and functional-notation casts must not be used; use named casts.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">double</span> d = (<span class="k">double</span>)i;                 <span <span class="k">class</span>="c">// Non-compliant</span>
+<span class="k">double</span> d = static_cast&lt;<span class="k">double</span>&gt;(i);    <span <span class="k">class</span>="c">// Compliant</span></code></pre>
+<ul>
+<li><strong>`reinterpret_cast` must not be used</strong> (save rare, documented low-level cases). <em>(Required)</em> ⚑verify</li>
+<li><strong>`const_cast` must not be used to modify a const object.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>`dynamic_cast` result must be checked before use.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>The operand of `sizeof` must not have side effects.</strong> <em>(Mandatory)</em> ⚑verify</li>
+<li><strong>Bitwise operators must not be applied to signed/Boolean operands.</strong> <em>(Required)</em> ⚑verify</li>
+<li>**Increment/decrement must not be mixed with other side effects in one</li>
+</ul>
+<p>  expression.*<em> </em>(Advisory)* ⚑verify</p>
+<ul>
+<li><strong>The result of an assignment must not be used as a sub-expression.</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">if</span> ((x = get()) != 0) {}   <span <span class="k">class</span>="c">// Non-compliant</span></code></pre>
+<h2>6. Statements (control flow)</h2>
+<ul>
+<li><strong>The body of an `if`/`else`/loop must be a compound statement `{ }`.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>An `if...else if` chain must end with an `else`.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Every `switch` must have a `default`; each clause ends with `break`</strong> (no</li>
+</ul>
+<p>  unintended fall-through). <em>(Required)</em> ⚑verify</p>
+<ul>
+<li><strong>A `switch` must have at least two case-clauses.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>`goto` must not be used</strong> (or only jump forward within the same function). <em>(Advisory/Required)</em> ⚑verify</li>
+<li><strong>A loop counter must not be of floating type.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>A `for` loop must be well-formed; range-based `for` is preferred.</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">for</span> (<span class="k">const</span> <span class="k">auto</span>&amp; item : items) { use(item); }   <span <span class="k">class</span>="c">// Compliant</span></code></pre>
+<ul>
+<li>**A function should have a single exit at the end (or use RAII to make multiple</li>
+</ul>
+<p>  exits safe).*<em> </em>(Advisory)* ⚑verify</p>
+<h2>7. Declarations (specifiers)</h2>
+<ul>
+<li><strong>Types must be explicitly specified where `auto` would harm clarity/safety.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>Use `const`/`constexpr` for values that do not change.</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">constexpr</span> <span class="k">int</span> kMax = 100;   <span <span class="k">class</span>="c">// Compliant</span></code></pre>
+<ul>
+<li><strong>`volatile` must be used only for genuinely volatile access.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>A declaration must declare no more than one variable.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>`using` (type alias) is preferred over `typedef`.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>An enumeration should be scoped (`enum class`).</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">enum</span> Color { Red };          <span <span class="k">class</span>="c">// Non-compliant: unscoped</span>
+<span class="k">enum</span> <span class="k">class</span> Color { Red };    <span <span class="k">class</span>="c">// Compliant</span></code></pre>
+<ul>
+<li><strong>`[[nodiscard]]` should mark functions whose result must be used.</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<h2>8. Declarators (pointers, references, functions, arrays)</h2>
+<ul>
+<li><strong>A non-`void` function must return a value on every path.</strong> <em>(Mandatory)</em> ⚑verify</li>
+<li><strong>Variable-length arrays must not be used.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Pointer arithmetic must remain within one array; prefer `std::span`/iterators.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>The address of an automatic object must not outlive it.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Functions must not be recursive (bounded stack).</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>A function must not have an unbounded variadic (`...`) parameter list;</strong> use</li>
+</ul>
+<p>  variadic templates instead. <em>(Required)</em> ⚑verify</p>
+<ul>
+<li><strong>Function parameters should be `const` references for non-trivial types.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>Default arguments must not be repeated/contradicted across declarations.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>A parameter should not be modified within the function.</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<h2>9. Classes &amp; special member functions</h2>
+<ul>
+<li><strong>A class managing a resource must obey the Rule of 0/3/5.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">struct</span> Bad { <span class="k">int</span>* p; ~Bad(){ <span class="k">delete</span> p; } };   <span <span class="k">class</span>="c">// Non-compliant: copy =&gt; <span class="k">double</span> free</span></code></pre>
+<ul>
+<li>**A polymorphic base class must have a <code>virtual</code> (or protected non-virtual)</li>
+</ul>
+<p>  destructor.*<em> </em>(Required)* ⚑verify</p>
+<ul>
+<li><strong>Data members should be `private`.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>Single-argument constructors should be `explicit`.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Members must be initialized in declaration order (member-init list).</strong> <em>(Required)</em> ⚑verify</li>
+<li>**A constructor must not call a virtual function that expects a fully</li>
+</ul>
+<p>  constructed object.*<em> </em>(Required)* ⚑verify</p>
+<ul>
+<li><strong>`= default` / `= delete` should express intent for special members.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li>**A class with virtual functions should mark them <code>override</code>/<code>final</code> in</li>
+</ul>
+<p>  derived classes.*<em> </em>(Required)* ⚑verify</p>
+<h2>10. Derived classes &amp; inheritance</h2>
+<ul>
+<li><strong>Every override must be marked `override`.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">struct</span> D : Base { <span class="k">void</span> f() <span class="k">override</span>; };   <span <span class="k">class</span>="c">// Compliant</span></code></pre>
+<ul>
+<li><strong>A virtual function&#x27;s default arguments must not be changed in an override.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Multiple inheritance from non-interface (stateful) bases should be avoided.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>Virtual inheritance should be used only where a diamond truly requires it.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>A base class subobject must not be sliced by value copy.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<h2>11. Overloading</h2>
+<ul>
+<li><strong>Overloaded operators must preserve conventional semantics</strong> (<code>==</code> symmetric,</li>
+</ul>
+<p>  side-effect-free, etc.). <em>(Required)</em> ⚑verify</p>
+<ul>
+<li><strong>Overload sets must not be ambiguous or rely on surprising conversions.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>`operator new`/`operator delete` must be provided and used in matching pairs.</strong> <em>(Required)</em> ⚑verify</li>
+<li>**User-defined conversion operators should be <code>explicit</code> unless implicit</li>
+</ul>
+<p>  conversion is intended.*<em> </em>(Advisory)* ⚑verify</p>
+<h2>12. Templates &amp; generic programming</h2>
+<ul>
+<li><strong>A template must be well-formed for every permitted instantiation.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Explicit specializations must be declared before first use.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Template parameters should be constrained (concepts / `static_assert`).</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code>static_assert(<span class="k">std</span>::is_integral_v&lt;T&gt;, &quot;T must be integral&quot;);   <span <span class="k">class</span>="c">// Compliant</span></code></pre>
+<ul>
+<li>**SFINAE / overload resolution must not silently select an unintended</li>
+</ul>
+<p>  specialization.*<em> </em>(Required)* ⚑verify</p>
+<ul>
+<li><strong>Non-type template parameters must have appropriate types.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<h2>13. Exception handling</h2>
+<ul>
+<li><strong>Exceptions must not escape a `noexcept` function or a destructor.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code>~Widget() <span class="k">noexcept</span> { <span <span class="k">class</span>="c">/* must not <span class="k">throw</span> */</span> }</code></pre>
+<ul>
+<li><strong>Exceptions must be caught by (const) reference, not by value.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">catch</span> (<span class="k">const</span> <span class="k">std</span>::exception&amp; e) { }   <span <span class="k">class</span>="c">// Compliant</span>
+<span class="k">catch</span> (<span class="k">std</span>::exception e) { }          <span <span class="k">class</span>="c">// Non-compliant: slicing</span></code></pre>
+<ul>
+<li><strong>Only objects derived from a common exception base should be thrown.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>An empty `throw;` (rethrow) must appear only inside a `catch`.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Every exception thrown must have a matching handler on all paths.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>`catch(...)` should be used only as a last-resort/boundary handler.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>Resources must be released on the exceptional path (RAII, not manual cleanup).</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<h2>14. Dynamic memory &amp; resource management</h2>
+<ul>
+<li>**Dynamic allocation must be constrained/avoided; when used, ownership must be</li>
+</ul>
+<p>  explicit via RAII (smart pointers).*<em> </em>(Required)* ⚑verify</p>
+<pre class="code"><code><span class="k">auto</span> p = <span class="k">std</span>::make_unique&lt;Widget&gt;();   <span <span class="k">class</span>="c">// Compliant</span>
+Widget* p = <span class="k">new</span> Widget();              <span <span class="k">class</span>="c">// Non-compliant: manual <span class="k">delete</span></span></code></pre>
+<ul>
+<li><strong>Raw owning pointers must not be used.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>`new`/`delete` (and `new[]`/`delete[]`) must be correctly paired.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>A pointer must not be used after the object is freed / moved-from.</strong> <em>(Mandatory)</em> ⚑verify</li>
+<li><strong>`std::move` must not be used on a `const` object or a value used afterwards.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<h2>15. Concurrency</h2>
+<ul>
+<li><strong>Shared data accessed by multiple threads must be protected (mutex/atomic).</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>A mutex must be released on all paths (`std::lock_guard`/`scoped_lock`).</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code><span class="k">std</span>::lock_guard&lt;<span class="k">std</span>::mutex&gt; lk(m);   <span <span class="k">class</span>="c">// Compliant: RAII unlock</span></code></pre>
+<ul>
+<li><strong>Deadlock must be avoided (consistent lock ordering / `std::scoped_lock`).</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>A thread must be joined or detached before its handle is destroyed.</strong> <em>(Required)</em> ⚑verify</li>
+<li>**Data races (unsynchronized concurrent access) are undefined and must not</li>
+</ul>
+<p>  occur.*<em> </em>(Mandatory)* ⚑verify</p>
+<h2>16. Preprocessor</h2>
+<ul>
+<li><strong>Function-like macros should be replaced by inline / `constexpr` functions.</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<pre class="code"><code>#define SQ(x) ((x)*(x))                    <span <span class="k">class</span>="c">// Non-compliant (advisory)</span>
+<span class="k">constexpr</span> <span class="k">int</span> sq(<span class="k">int</span> x){ <span class="k">return</span> x * x; }   <span <span class="k">class</span>="c">// Compliant</span></code></pre>
+<ul>
+<li><strong>Object-like macros for constants should be `constexpr` / `enum` instead.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>Macro parameters in the replacement list must be parenthesised.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>`#include` operands must be well-formed</strong> (no <code>&#x27;</code>, <code>&quot;</code>, <code>\</code>, <code>/*</code>, <code>//</code>). <em>(Required)</em> ⚑verify</li>
+<li><strong>Headers must have include guards or `#pragma once`.</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>`#undef` should not be used.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li><strong>`#` / `##` operators should not be used.</strong> <em>(Advisory)</em> ⚑verify</li>
+</ul>
+<h2>17. Standard library usage</h2>
+<ul>
+<li><strong>Deprecated or removed library features must not be used.</strong> <em>(Required)</em> ⚑verify</li>
+<li>**C standard-library facilities superseded by C++ equivalents should not be</li>
+</ul>
+<p>  used*<em> (`&lt;cstring&gt;` raw ops → `std::string`/`std::array`/algorithms). </em>(Advisory)* ⚑verify</p>
+<pre class="code"><code><span class="k">std</span>::array&lt;<span class="k">int</span>,4&gt; a{};   <span <span class="k">class</span>="c">// Compliant, over C array + memset</span></code></pre>
+<ul>
+<li><strong>Library functions must be called with valid arguments (ranges, bounds).</strong> <em>(Required)</em> ⚑verify</li>
+<li><strong>Iterators must not be used after invalidation.</strong> <em>(Mandatory)</em> ⚑verify</li>
+<li><strong>`std::vector&lt;bool&gt;` and other surprising specializations should be avoided.</strong> <em>(Advisory)</em> ⚑verify</li>
+<li>**C++ I/O / locale features with heavy runtime cost should be used</li>
+</ul>
+<p>  deliberately.*<em> </em>(Advisory)* ⚑verify</p>
+<ul>
+<li><strong>`&lt;csetjmp&gt;`, `&lt;csignal&gt;`, `&lt;cstdarg&gt;` facilities must not be used.</strong> <em>(Required)</em> ⚑verify</li>
+</ul>
+<hr>
+<h3>Directives</h3>
+<p>See <a href="directives.md">`directives.md`</a> for the four MISRA C++:2023 directives.</p>
+</section>
+
+  <footer>
+    Generated from the <code>misra-guidelines</code> skill · paraphrased reference,
+    not the official MISRA standard.
+  </footer>
+</div>
+<script>
+  (function(){
+    var btn=document.getElementById('themeToggle'), root=document.documentElement;
+    function cur(){return root.getAttribute('data-theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');}
+    btn.addEventListener('click',function(){root.setAttribute('data-theme',cur()==='dark'?'light':'dark');});
+  })();
+</script>
+</body>
+</html>
