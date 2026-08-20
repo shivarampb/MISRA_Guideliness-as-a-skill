@@ -133,9 +133,17 @@ enum E { A = 1, B, C = 2 };   /* Non-compliant: B and C both == 2 */
 **Guideline:** The `restrict` type qualifier must not be used.
 **Rationale:** Misuse silently introduces UB via wrong aliasing assumptions.
 
-### Rule 8.15–8.17 — ⚑verify *(AMD2, C11/C18)*
-**Guideline:** Constraints on alignment specifiers (`_Alignas`, `_Alignof`) and
-over-aligned types.
+### Rule 8.15 — Required · Decidable · System ⚑verify *(AMD2)*
+**Guideline:** All declarations of an object with an explicit alignment
+specification must specify the same alignment.
+
+### Rule 8.16 — Advisory · Decidable · Single TU ⚑verify *(AMD2)*
+**Guideline:** The alignment specification of zero (`_Alignas(0)`) should not
+appear in an object declaration.
+
+### Rule 8.17 — Advisory · Decidable · Single TU ⚑verify *(AMD2)*
+**Guideline:** At most one explicit alignment specifier should appear in an object
+declaration.
 
 ---
 

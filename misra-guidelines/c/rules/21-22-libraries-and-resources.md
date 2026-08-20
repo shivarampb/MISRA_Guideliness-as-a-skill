@@ -94,9 +94,25 @@ after a subsequent call to the same function.
 ### Rule 21.21 — Required · Decidable · Single TU ⚑verify *(AMD3)*
 **Guideline:** `system` of `<stdlib.h>` must not be used.
 
-### Rule 21.22–21.26 — ⚑verify *(AMD3)*
-**Guideline:** Type-generic math (`<tgmath.h>`) and C11 atomics/memory-ordering/
-thread-local constraints.
+### Rule 21.22 — Mandatory · Undecidable · Single TU ⚑verify *(AMD3)*
+**Guideline:** All operand arguments to any type-generic macros in `<tgmath.h>`
+must have an appropriate essential type.
+
+### Rule 21.23 — Required · Undecidable · Single TU ⚑verify *(AMD3)*
+**Guideline:** All operand arguments to any multi-argument type-generic macros in
+`<tgmath.h>` must have the same standard type.
+
+### Rule 21.24 — Required · Decidable · Single TU ⚑verify *(AMD3)*
+**Guideline:** The random-number generator functions of `<stdlib.h>` (`rand`,
+`srand`) must not be used.
+
+### Rule 21.25 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** All memory-synchronization operations must be executed in
+sequentially-consistent order (`memory_order_seq_cst`).
+
+### Rule 21.26 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** The Standard Library function `mtx_timedlock()` must only be invoked
+on mutex objects of an appropriate (timed) mutex type.
 
 ---
 
@@ -152,7 +168,42 @@ errno = 0; v = strtol(s,&e,10); if (errno != 0) { /* handle */ }   /* Compliant 
 **Guideline:** `errno` must only be tested when the last function called was an
 errno-setting function.
 
-### Rule 22.11–22.20 — ⚑verify *(AMD3)*
-**Guideline:** C11 threads/concurrency (`<threads.h>`): mutexes, condition
-variables, and thread-specific storage — creation, ownership, and release
-constraints.
+### Rule 22.11 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** A thread previously joined or detached must not be joined or
+detached again.
+
+### Rule 22.12 — Mandatory · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** Thread objects, thread synchronization objects, and thread-specific
+storage pointers must only be accessed by the appropriate Standard Library
+functions.
+
+### Rule 22.13 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** Thread objects, thread synchronization objects, and thread-specific
+storage pointers must have appropriate storage duration.
+
+### Rule 22.14 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** Thread synchronization objects (mutexes, condition variables) must
+be initialized before being accessed.
+
+### Rule 22.15 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** Thread synchronization objects and thread-specific storage pointers
+must not be destroyed until after all threads accessing them have terminated.
+
+### Rule 22.16 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** All mutex objects locked by a thread must be explicitly unlocked by
+the same thread.
+
+### Rule 22.17 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** No thread must unlock a mutex, or call `cnd_wait`/`cnd_timedwait` on
+a mutex, that it has not previously locked.
+
+### Rule 22.18 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** Non-recursive mutexes must not be recursively locked.
+
+### Rule 22.19 — Required · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** A condition variable must be associated with at most one mutex
+object.
+
+### Rule 22.20 — Mandatory · Undecidable · System ⚑verify *(AMD3, C11)*
+**Guideline:** Thread-specific storage pointers must be created (via `tss_create`)
+before being accessed.

@@ -274,8 +274,15 @@ int32_t count;   <span class="c">/* Compliant */</span></code></pre>
 <h3>Dir 4.15 — Required · Undecidable · Single TU ⚑verify <em>(AMD3)</em></h3>
 <p><strong>Guideline:</strong> Evaluation of floating-point expressions must not lead to the undetected generation of infinities and NaNs.</p>
 <hr>
-<h2>Dir 5 — Concurrency <em>(C:2023 amendments)</em> ⚑verify</h2>
-<p>The published C:2023 total is ~21 directives across ~5 sections (vs 17 in the original C:2012). A <strong>concurrency</strong> directive area (<code>Dir 5.x</code>), tied to the C11 threading additions, is associated with the newer editions. <strong>Confirm the exact IDs, titles, and categories of any `Dir 5.x` guidelines against the official MISRA C:2023 document</strong> before citing them in a compliance matrix.</p>
+<h2>Dir 5 — Concurrency <em>(C:2023 / AMD3)</em> ⚑verify</h2>
+<p>The published C:2023 total is ~21 directives across ~5 sections (vs 17 in the original C:2012). The <strong>concurrency</strong> section (<code>Dir 5.x</code>), tied to the C11 <code>&lt;threads.h&gt;</code> additions, contains:</p>
+<h3>Dir 5.1 — Required · Undecidable · System ⚑verify</h3>
+<p><strong>Guideline:</strong> There must be no data races between threads. <strong>Rationale:</strong> Unsynchronized concurrent access to shared data (at least one a write) is undefined behaviour.</p>
+<h3>Dir 5.2 — Required · Undecidable · System ⚑verify</h3>
+<p><strong>Guideline:</strong> There must be no deadlocks between threads. <strong>Rationale:</strong> Circular lock-acquisition waits halt the program; use a consistent global lock ordering.</p>
+<h3>Dir 5.3 — Advisory · Undecidable · System ⚑verify</h3>
+<p><strong>Guideline:</strong> There should be no dynamic thread creation (thread pools / statically-created threads are preferred for determinism).</p>
+<blockquote><strong>Confirm the exact IDs, titles, and categories of the `Dir 5.x` guidelines against the official MISRA C:2023 document</strong> before citing them in a formal compliance matrix.</blockquote>
 </section>
 <section id="misra-c-2023-rules-1-6" class="doc-section">
 <div class="section-eyebrow">MISRA C</div>
@@ -444,8 +451,12 @@ uint32_t x = 0xFFFFFFFFU;   <span class="c">/* Compliant */</span></code></pre>
 <p><strong>Guideline:</strong> A pointer should point to a const-qualified type whenever possible.</p>
 <h3>Rule 8.14 — Required · Decidable · Single TU</h3>
 <p><strong>Guideline:</strong> The <code>restrict</code> type qualifier must not be used. <strong>Rationale:</strong> Misuse silently introduces UB via wrong aliasing assumptions.</p>
-<h3>Rule 8.15–8.17 — ⚑verify <em>(AMD2, C11/C18)</em></h3>
-<p><strong>Guideline:</strong> Constraints on alignment specifiers (<code>_Alignas</code>, <code>_Alignof</code>) and over-aligned types.</p>
+<h3>Rule 8.15 — Required · Decidable · System ⚑verify <em>(AMD2)</em></h3>
+<p><strong>Guideline:</strong> All declarations of an object with an explicit alignment specification must specify the same alignment.</p>
+<h3>Rule 8.16 — Advisory · Decidable · Single TU ⚑verify <em>(AMD2)</em></h3>
+<p><strong>Guideline:</strong> The alignment specification of zero (<code>_Alignas(0)</code>) should not appear in an object declaration.</p>
+<h3>Rule 8.17 — Advisory · Decidable · Single TU ⚑verify <em>(AMD2)</em></h3>
+<p><strong>Guideline:</strong> At most one explicit alignment specifier should appear in an object declaration.</p>
 <hr>
 <h2>§9 — Initialization</h2>
 <h3>Rule 9.1 — Mandatory · Undecidable · System</h3>
@@ -805,8 +816,16 @@ isdigit((<span class="k">unsigned</span> <span class="k">char</span>)c);        
 <p><strong>Guideline:</strong> The pointer returned by certain library functions must not be used after a subsequent call to the same function.</p>
 <h3>Rule 21.21 — Required · Decidable · Single TU ⚑verify <em>(AMD3)</em></h3>
 <p><strong>Guideline:</strong> <code>system</code> of <code>&lt;stdlib.h&gt;</code> must not be used.</p>
-<h3>Rule 21.22–21.26 — ⚑verify <em>(AMD3)</em></h3>
-<p><strong>Guideline:</strong> Type-generic math (<code>&lt;tgmath.h&gt;</code>) and C11 atomics/memory-ordering/ thread-local constraints.</p>
+<h3>Rule 21.22 — Mandatory · Undecidable · Single TU ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> All operand arguments to any type-generic macros in <code>&lt;tgmath.h&gt;</code> must have an appropriate essential type.</p>
+<h3>Rule 21.23 — Required · Undecidable · Single TU ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> All operand arguments to any multi-argument type-generic macros in <code>&lt;tgmath.h&gt;</code> must have the same standard type.</p>
+<h3>Rule 21.24 — Required · Decidable · Single TU ⚑verify <em>(AMD3)</em></h3>
+<p><strong>Guideline:</strong> The random-number generator functions of <code>&lt;stdlib.h&gt;</code> (<code>rand</code>, <code>srand</code>) must not be used.</p>
+<h3>Rule 21.25 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> All memory-synchronization operations must be executed in sequentially-consistent order (<code>memory_order_seq_cst</code>).</p>
+<h3>Rule 21.26 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> The Standard Library function <code>mtx_timedlock()</code> must only be invoked on mutex objects of an appropriate (timed) mutex type.</p>
 <hr>
 <h2>§22 — Resources</h2>
 <h3>Rule 22.1 — Required · Undecidable · System</h3>
@@ -833,8 +852,26 @@ isdigit((<span class="k">unsigned</span> <span class="k">char</span>)c);        
 <pre class="code"><code>errno = 0; v = strtol(s,&amp;e,10); <span class="k">if</span> (errno != 0) { <span class="c">/* handle */</span> }   <span class="c">/* Compliant */</span></code></pre>
 <h3>Rule 22.10 — Required · Undecidable · System ⚑verify <em>(AMD1)</em></h3>
 <p><strong>Guideline:</strong> <code>errno</code> must only be tested when the last function called was an errno-setting function.</p>
-<h3>Rule 22.11–22.20 — ⚑verify <em>(AMD3)</em></h3>
-<p><strong>Guideline:</strong> C11 threads/concurrency (<code>&lt;threads.h&gt;</code>): mutexes, condition variables, and thread-specific storage — creation, ownership, and release constraints.</p>
+<h3>Rule 22.11 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> A thread previously joined or detached must not be joined or detached again.</p>
+<h3>Rule 22.12 — Mandatory · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> Thread objects, thread synchronization objects, and thread-specific storage pointers must only be accessed by the appropriate Standard Library functions.</p>
+<h3>Rule 22.13 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> Thread objects, thread synchronization objects, and thread-specific storage pointers must have appropriate storage duration.</p>
+<h3>Rule 22.14 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> Thread synchronization objects (mutexes, condition variables) must be initialized before being accessed.</p>
+<h3>Rule 22.15 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> Thread synchronization objects and thread-specific storage pointers must not be destroyed until after all threads accessing them have terminated.</p>
+<h3>Rule 22.16 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> All mutex objects locked by a thread must be explicitly unlocked by the same thread.</p>
+<h3>Rule 22.17 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> No thread must unlock a mutex, or call <code>cnd_wait</code>/<code>cnd_timedwait</code> on a mutex, that it has not previously locked.</p>
+<h3>Rule 22.18 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> Non-recursive mutexes must not be recursively locked.</p>
+<h3>Rule 22.19 — Required · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> A condition variable must be associated with at most one mutex object.</p>
+<h3>Rule 22.20 — Mandatory · Undecidable · System ⚑verify <em>(AMD3, C11)</em></h3>
+<p><strong>Guideline:</strong> Thread-specific storage pointers must be created (via <code>tss_create</code>) before being accessed.</p>
 </section>
 <section id="misra-c-2023-overview" class="doc-section">
 <div class="section-eyebrow">MISRA C++</div>

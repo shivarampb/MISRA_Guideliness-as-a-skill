@@ -122,9 +122,26 @@ undetected generation of infinities and NaNs.
 
 ---
 
-## Dir 5 — Concurrency *(C:2023 amendments)* ⚑verify
+## Dir 5 — Concurrency *(C:2023 / AMD3)* ⚑verify
+
 The published C:2023 total is ~21 directives across ~5 sections (vs 17 in the
-original C:2012). A **concurrency** directive area (`Dir 5.x`), tied to the C11
-threading additions, is associated with the newer editions. **Confirm the exact
-IDs, titles, and categories of any `Dir 5.x` guidelines against the official
-MISRA C:2023 document** before citing them in a compliance matrix.
+original C:2012). The **concurrency** section (`Dir 5.x`), tied to the C11
+`<threads.h>` additions, contains:
+
+### Dir 5.1 — Required · Undecidable · System ⚑verify
+**Guideline:** There must be no data races between threads.
+**Rationale:** Unsynchronized concurrent access to shared data (at least one a
+write) is undefined behaviour.
+
+### Dir 5.2 — Required · Undecidable · System ⚑verify
+**Guideline:** There must be no deadlocks between threads.
+**Rationale:** Circular lock-acquisition waits halt the program; use a consistent
+global lock ordering.
+
+### Dir 5.3 — Advisory · Undecidable · System ⚑verify
+**Guideline:** There should be no dynamic thread creation (thread pools /
+statically-created threads are preferred for determinism).
+
+> **Confirm the exact IDs, titles, and categories of the `Dir 5.x` guidelines
+> against the official MISRA C:2023 document** before citing them in a formal
+> compliance matrix.
