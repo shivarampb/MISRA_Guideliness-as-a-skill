@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installing the MISRA Skill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f5f7fa; --surface:#ffffff; --surface-2:#eef1f6;
+    --ink:#141821; --muted:#5b6472; --faint:#8a93a3;
+    --border:#e0e5ec; --border-strong:#cdd4de;
+    --accent:#c8760a; --accent-ink:#94560a; --accent-soft:#fbeed8;
+    --good:#0f8a7e; --good-soft:#e0f2ef;
+    --code-bg:#141821; --code-ink:#e7ebf2; --code-faint:#7f8a9c;
+    --shadow:0 1px 2px rgba(20,24,33,.04),0 8px 24px rgba(20,24,33,.06);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1017; --surface:#141924; --surface-2:#1b2130;
+      --ink:#e7ebf2; --muted:#9aa4b5; --faint:#6b7688;
+      --border:#242c3a; --border-strong:#313a4b;
+      --accent:#f0a13c; --accent-ink:#f6bd6f; --accent-soft:#2a2013;
+      --good:#3fb8a9; --good-soft:#12241f;
+      --code-bg:#0a0d13; --code-ink:#e7ebf2; --code-faint:#6b7688;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+      --bg:#0d1017; --surface:#141924; --surface-2:#1b2130;
+      --ink:#e7ebf2; --muted:#9aa4b5; --faint:#6b7688;
+      --border:#242c3a; --border-strong:#313a4b;
+      --accent:#f0a13c; --accent-ink:#f6bd6f; --accent-soft:#2a2013;
+      --good:#3fb8a9; --good-soft:#12241f;
+      --code-bg:#0a0d13; --code-ink:#e7ebf2; --code-faint:#6b7688;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px; line-height:1.65; letter-spacing:-.003em;
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:0 24px}
+  code,pre,.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  /* Header */
+  header{padding:64px 0 40px; border-bottom:1px solid var(--border)}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--accent-ink); background:var(--accent-soft);
+    padding:6px 12px; border-radius:100px; margin-bottom:22px;
+  }
+  .eyebrow::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--accent)}
+  h1{
+    font-size:clamp(30px,5.4vw,44px); line-height:1.08; font-weight:700;
+    letter-spacing:-.02em; margin:0 0 16px; text-wrap:balance;
+  }
+  .lede{font-size:19px; color:var(--muted); margin:0; max-width:60ch}
+  .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px}
+  .tag{
+    font:500 12.5px/1 "IBM Plex Mono",monospace; color:var(--muted);
+    background:var(--surface-2); border:1px solid var(--border);
+    padding:7px 11px; border-radius:7px;
+  }
+
+  h2{
+    font-size:13px; font-weight:600; letter-spacing:.11em; text-transform:uppercase;
+    color:var(--faint); margin:56px 0 4px;
+  }
+  section > h3{font-size:22px; font-weight:600; letter-spacing:-.015em; margin:0 0 4px}
+  p{margin:14px 0}
+  a{color:var(--accent-ink); text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:1px}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:4px}
+
+  /* Steps */
+  .step{
+    position:relative; padding:26px 26px 26px 76px; margin:20px 0;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; box-shadow:var(--shadow);
+  }
+  .step .num{
+    position:absolute; left:22px; top:26px;
+    width:34px; height:34px; border-radius:9px;
+    display:grid; place-items:center;
+    font:600 15px/1 "IBM Plex Mono",monospace; color:#fff; background:var(--accent);
+    font-variant-numeric:tabular-nums;
+  }
+  .step h3{margin:2px 0 0; font-size:19px; font-weight:600; letter-spacing:-.01em}
+  .step .sub{color:var(--muted); font-size:14.5px; margin:4px 0 0}
+  .pick{
+    display:inline-block; font:600 11px/1 "IBM Plex Mono",monospace;
+    text-transform:uppercase; letter-spacing:.08em;
+    color:var(--accent-ink); background:var(--accent-soft);
+    padding:5px 9px; border-radius:6px; margin-bottom:12px;
+  }
+
+  /* Code */
+  pre{
+    background:var(--code-bg); color:var(--code-ink);
+    border-radius:10px; padding:16px 18px; margin:14px 0 4px;
+    overflow-x:auto; font-size:13.5px; line-height:1.6;
+    border:1px solid var(--border-strong);
+  }
+  pre .c{color:var(--code-faint)}          /* comment */
+  pre .p{color:var(--accent)}              /* prompt / path accent */
+  pre .g{color:var(--good)}                /* good */
+  :not(pre) > code{
+    background:var(--surface-2); border:1px solid var(--border);
+    padding:2px 6px; border-radius:5px; font-size:13.5px; color:var(--ink);
+  }
+
+  .note{
+    border-left:3px solid var(--accent); background:var(--accent-soft);
+    padding:14px 18px; border-radius:0 10px 10px 0; margin:20px 0;
+    font-size:14.5px; color:var(--ink);
+  }
+  .note.good{border-color:var(--good); background:var(--good-soft)}
+  .note strong{font-weight:600}
+
+  ul.clean{list-style:none; padding:0; margin:16px 0}
+  ul.clean li{position:relative; padding:6px 0 6px 26px; border-bottom:1px solid var(--border)}
+  ul.clean li:last-child{border-bottom:0}
+  ul.clean li::before{content:"›"; position:absolute; left:6px; top:6px; color:var(--accent); font-weight:700}
+
+  /* Tree */
+  .tree{background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:16px 18px; font:400 13px/1.75 "IBM Plex Mono",monospace; color:var(--muted); overflow-x:auto}
+  .tree .d{color:var(--ink); font-weight:600}
+  .tree .a{color:var(--accent-ink)}
+
+  footer{border-top:1px solid var(--border); margin-top:64px; padding:32px 0 72px; color:var(--faint); font-size:13.5px}
+  .toggle{
+    position:fixed; top:16px; right:16px; z-index:10;
+    background:var(--surface); color:var(--muted); border:1px solid var(--border-strong);
+    border-radius:100px; padding:8px 14px; font:500 12.5px/1 "IBM Plex Sans",sans-serif;
+    cursor:pointer; box-shadow:var(--shadow);
+  }
+  @media (prefers-reduced-motion:no-preference){ .step,.toggle{transition:border-color .2s ease} }
+  @media (max-width:560px){ .step{padding:22px 18px 22px 18px} .step .num{position:static; margin-bottom:10px} }
+</style>
+</head>
+<body>
+<button class="toggle" id="themeToggle" aria-label="Toggle color theme">◐ Theme</button>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Skill setup guide</span>
+    <h1>Adding the MISRA Guidelines skill</h1>
+    <p class="lede">A step-by-step procedure for installing the MISRA&nbsp;C:2023 &amp;
+    C++:2023 reference skill so Claude picks it up automatically when you review or
+    write C/C++ code.</p>
+    <div class="meta">
+      <span class="tag">skill name: misra-guidelines</span>
+      <span class="tag">entry: SKILL.md</span>
+      <span class="tag">no build step</span>
+    </div>
+  </header>
+
+  <h2>Before you start</h2>
+  <h3 style="font-size:22px;font-weight:600;margin:6px 0 0;">What a "skill" is</h3>
+  <p>A Claude skill is just a folder containing a <code>SKILL.md</code> file with a
+  YAML frontmatter (<code>name</code> + <code>description</code>) and any supporting
+  files. Claude reads the description to decide when to load it — you don't call it
+  manually. This skill's folder looks like this:</p>
+
+  <div class="tree">
+<span class="d">misra-guidelines/</span>
+├── <span class="a">SKILL.md</span>            <span style="color:var(--faint)"># entry point + router (must exist)</span>
+├── <span class="d">c/</span>                  <span style="color:var(--faint)"># MISRA C:2023 bundle</span>
+│   ├── overview.md
+│   ├── directives.md
+│   └── <span class="d">rules/</span>          <span style="color:var(--faint)"># rules grouped by section</span>
+└── <span class="d">cpp/</span>                <span style="color:var(--faint)"># MISRA C++:2023 bundle</span>
+    ├── overview.md
+    └── <span class="d">rules/</span>
+  </div>
+
+  <div class="note"><strong>Prerequisite:</strong> Claude Code (CLI, desktop, or web),
+  or any Agent SDK setup that supports skills. Nothing to compile or install as a
+  package — skills are plain Markdown.</div>
+
+  <h2>Installation</h2>
+  <p>Pick <strong>one</strong> of the three methods below depending on whether you
+  want the skill for yourself, for a repository, or shared through a plugin.</p>
+
+  <div class="step">
+    <span class="num">1</span>
+    <span class="pick">Method A · Personal</span>
+    <h3>Install as a personal skill (available in every project)</h3>
+    <p class="sub">Copies the skill into your user-level skills directory so Claude
+    Code can use it in any repo on your machine.</p>
+<pre><span class="c"># from the root of this repository</span>
+mkdir -p <span class="p">~/.claude/skills</span>
+cp -R misra-guidelines <span class="p">~/.claude/skills/</span>
+
+<span class="c"># verify it landed</span>
+ls <span class="p">~/.claude/skills/misra-guidelines/</span>SKILL.md</pre>
+  </div>
+
+  <div class="step">
+    <span class="num">2</span>
+    <span class="pick">Method B · Project</span>
+    <h3>Install as a project skill (shared with your team via git)</h3>
+    <p class="sub">Lives inside a target repository under <code>.claude/skills/</code>
+    and is committed, so every collaborator gets it automatically.</p>
+<pre><span class="c"># inside the repo you want MISRA checks in</span>
+mkdir -p <span class="p">.claude/skills</span>
+cp -R /path/to/misra-guidelines <span class="p">.claude/skills/</span>
+
+git add .claude/skills/misra-guidelines
+git commit -m "Add MISRA guidelines skill"</pre>
+    <div class="note good"><strong>Recommended for teams.</strong> Committing under
+    <code>.claude/skills/</code> means MISRA guidance travels with the codebase and
+    stays version-controlled alongside it.</div>
+  </div>
+
+  <div class="step">
+    <span class="num">3</span>
+    <span class="pick">Method C · Plugin</span>
+    <h3>Distribute through a plugin marketplace (optional)</h3>
+    <p class="sub">For sharing across many repos or an organization. Package the skill
+    inside a plugin and publish it to a marketplace your team has configured.</p>
+<pre><span class="c"># place the skill under a plugin's skills/ directory</span>
+your-plugin/
+└── skills/
+    └── <span class="p">misra-guidelines/</span> <span class="c"># (this folder)</span>
+
+<span class="c"># then, in Claude Code</span>
+/plugin marketplace add &lt;your-marketplace&gt;
+/plugin install &lt;your-plugin&gt;</pre>
+  </div>
+
+  <div class="step">
+    <span class="num">4</span>
+    <span class="pick">Verify</span>
+    <h3>Confirm Claude can see the skill</h3>
+    <p class="sub">Reload skills (restart Claude Code, or start a new session), then
+    check it's listed and trigger it.</p>
+<pre><span class="c"># list available skills in Claude Code</span>
+/skills
+
+<span class="c"># you should see:</span>
+<span class="g">misra-guidelines</span>  Reference index of MISRA C:2023 and C++:2023…</pre>
+    <p>Then just ask a question that matches its description — Claude loads the skill
+    on its own:</p>
+    <ul class="clean">
+      <li><em>"Does this function comply with MISRA C Rule 15.7?"</em></li>
+      <li><em>"Review this C++ file against MISRA C++:2023."</em></li>
+      <li><em>"What category is Dir 4.12 and why does it exist?"</em></li>
+    </ul>
+  </div>
+
+  <h2>How it behaves once installed</h2>
+  <ul class="clean">
+    <li>Claude reads <code>SKILL.md</code> first, then loads only the relevant
+      section file (e.g. <code>c/rules/12-16-expressions-and-control.md</code>) —
+      keeping context lean.</li>
+    <li>C and C++ are separate bundles; a C rule number does <strong>not</strong>
+      map to the same C++ number.</li>
+    <li>Summaries are <strong>paraphrased</strong> (MISRA text is copyrighted).
+      Entries marked <code>⚑verify</code> should be checked against the official
+      standard before use in a formal compliance matrix.</li>
+  </ul>
+
+  <div class="note"><strong>Troubleshooting.</strong> If the skill doesn't appear:
+  confirm <code>SKILL.md</code> sits at the folder's top level, that its frontmatter
+  has both <code>name:</code> and <code>description:</code>, and that you started a
+  fresh session after copying the files.</div>
+
+  <footer>
+    MISRA® is a registered trademark of HORIBA MIRA Ltd. This skill contains
+    paraphrased summaries only and is not a substitute for the official standard.
+  </footer>
+</div>
+
+<script>
+  (function(){
+    var btn=document.getElementById('themeToggle');
+    var root=document.documentElement;
+    function current(){
+      if(root.getAttribute('data-theme'))return root.getAttribute('data-theme');
+      return window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+    }
+    btn.addEventListener('click',function(){
+      root.setAttribute('data-theme', current()==='dark'?'light':'dark');
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,119 +1,246 @@
-# MISRA C++:2023 — Rules (representative set, grouped by C++ area)
+# MISRA C++:2023 — Rules (in depth, representative set)
 
-> **Status:** This file is a **well-established, representative subset** of the
-> C++:2023 rules, organized under the C++ standard areas they belong to. Every
-> entry is marked `⚑verify` — the guidance reflects long-standing MISRA C++ /
-> AUTOSAR C++14 practice, but the **exact rule IDs, categories, and wording of
-> MISRA C++:2023 must be confirmed against the official document**. See
-> `../overview.md` for how to complete this to the full 175-rule index.
+> **Status:** a **well-established, representative subset** of the C++:2023 rules,
+> grouped under the C++ standard areas they belong to, each with rationale and
+> compliant/non-compliant C++. Every entry is `⚑verify` — the guidance reflects
+> long-standing MISRA C++ / AUTOSAR C++14 practice, but the **exact rule IDs,
+> categories, and wording of MISRA C++:2023 must be confirmed against the
+> official document**. See `../overview.md` for how to complete this to all 175.
 
-Format: `<paraphrased rule> — (likely Category)` ⚑verify.
+---
 
-## Lexical conventions (identifiers, literals, comments)
+## Lexical conventions
 
-- Identifiers must not be reused across scopes in a way that shadows/hides. *(Required)* ⚑verify
-- The `/*` and `//` sequences must not appear inside a comment. *(Required)* ⚑verify
-- Literal suffixes must use uppercase (`L`, `U`), never lowercase `l`. *(Required)* ⚑verify
-- Numeric and character escape sequences must be well-formed and terminated. *(Required)* ⚑verify
+### Comments must not nest — *(Required)* ⚑verify
+```cpp
+/* a /* b */ c;   // Non-compliant: 'c;' is live code, not a comment
+```
 
-## Basic concepts (declarations, scope, ODR, storage duration)
+### Literal suffixes must be uppercase — *(Required)* ⚑verify
+```cpp
+auto n = 100l;    // Non-compliant: looks like 1001
+auto n = 100L;    // Compliant
+```
 
-- An object/function must have exactly one definition (ODR). *(Required)* ⚑verify
-- Objects must be initialized before their value is read. *(Mandatory)* ⚑verify
-- An object should be declared in the smallest scope practical. *(Advisory)* ⚑verify
-- `static` storage-duration objects must be initialized without ordering hazards
-  (avoid the static initialization order fiasco). *(Required)* ⚑verify
+---
+
+## Basic concepts (declarations, scope, ODR, lifetime)
+
+### One Definition Rule — *(Required)* ⚑verify
+Every entity must have exactly one definition across the program.
+
+### Objects must be initialized before use — *(Mandatory)* ⚑verify
+```cpp
+int x; use(x);        // Non-compliant: indeterminate
+int x{0}; use(x);     // Compliant
+```
+
+### Declare in the narrowest scope — *(Advisory)* ⚑verify
+Declare variables close to first use; prefer initialization at declaration.
+
+### Avoid the static init-order fiasco — *(Required)* ⚑verify
+Cross-TU dependencies between namespace-scope objects with dynamic initialization
+must be avoided (use function-local statics / Meyers singleton).
+
+---
 
 ## Standard conversions
 
-- Implicit narrowing conversions that may lose value must not occur. *(Required)* ⚑verify
-- A conversion must not remove `const`/`volatile` qualification. *(Required)* ⚑verify
-- Pointer-to-integer and integer-to-pointer conversions should be avoided. *(Advisory)* ⚑verify
+### No implicit narrowing — *(Required)* ⚑verify
+```cpp
+int i = 300; char c = i;    // Non-compliant: narrowing
+char c{ static_cast<char>(i) };  // Compliant: explicit + braces catch constants
+```
+
+### Do not cast away const/volatile — *(Required)* ⚑verify
+```cpp
+const int a = 1; int& r = const_cast<int&>(a);  // Non-compliant
+```
+
+---
 
 ## Expressions
 
-- Operator precedence should be made explicit with parentheses. *(Advisory)* ⚑verify
-- The comma operator should not be used. *(Advisory)* ⚑verify
-- Evaluation must not depend on unspecified order of evaluation / side-effect
-  ordering. *(Required)* ⚑verify
-- C-style casts must not be used; use named casts (`static_cast`, etc.). *(Required)* ⚑verify
-- `reinterpret_cast` and `const_cast` should be avoided. *(Advisory/Required)* ⚑verify
-- `sizeof` must not be applied to an expression with side effects. *(Mandatory)* ⚑verify
+### Make precedence explicit — *(Advisory)* ⚑verify
+```cpp
+x = a + b << c;      // Non-compliant
+x = (a + b) << c;    // Compliant
+```
+
+### Do not use the comma operator — *(Advisory)* ⚑verify
+
+### Use named casts, never C-style casts — *(Required)* ⚑verify
+```cpp
+double d = (double)i;                 // Non-compliant
+double d = static_cast<double>(i);    // Compliant
+```
+
+### Avoid `reinterpret_cast` / `const_cast` — *(Required/Advisory)* ⚑verify
+
+### `sizeof` operand must have no side effects — *(Mandatory)* ⚑verify
+```cpp
+n = sizeof(a[i++]);   // Non-compliant: i++ not evaluated
+```
+
+---
 
 ## Statements (control flow)
 
-- The body of an iteration/selection statement must be a compound statement `{ }`. *(Required)* ⚑verify
-- `if ... else if` chains must end with an `else`. *(Required)* ⚑verify
-- Every `switch` must have a `default`, and each clause must end with `break`. *(Required)* ⚑verify
-- `goto` should not be used. *(Advisory)* ⚑verify
-- A loop counter must not be of floating type. *(Required)* ⚑verify
+### Bodies must be compound statements — *(Required)* ⚑verify
+```cpp
+if (x) y = 1;         // Non-compliant
+if (x) { y = 1; }     // Compliant
+```
+
+### `if...else if` must end with `else` — *(Required)* ⚑verify
+
+### `switch` must have `default`; clauses end with `break` — *(Required)* ⚑verify
+```cpp
+switch (k) {
+  case 1: v = 1; break;
+  default: v = 0; break;   // Compliant
+}
+```
+
+### `goto` should not be used — *(Advisory)* ⚑verify
+
+### Loop counter must not be floating — *(Required)* ⚑verify
+
+---
 
 ## Declarations
 
-- Prefer `const` / `constexpr` for values that do not change. *(Advisory)* ⚑verify
-- `auto` must not obscure the type where it harms readability/safety. *(Advisory)* ⚑verify
-- A variable must not be declared with an implicit type. *(Required)* ⚑verify
+### Prefer `const`/`constexpr` — *(Advisory)* ⚑verify
+```cpp
+constexpr int kMax = 100;   // Compliant
+```
+
+### `auto` must not obscure type/safety — *(Advisory)* ⚑verify
+
+---
 
 ## Declarators (pointers, references, functions)
 
-- A function with non-`void` return type must return a value on all paths. *(Mandatory)* ⚑verify
-- Pointer arithmetic must stay within the bounds of the same array. *(Required)* ⚑verify
-- The address of an automatic object must not outlive that object. *(Required)* ⚑verify
-- Functions should not be recursive. *(Required)* ⚑verify
+### Non-void function must return on all paths — *(Mandatory)* ⚑verify
+```cpp
+int f(int x){ if (x) return 1; }   // Non-compliant: falls off end
+```
+
+### Pointer arithmetic stays within one array — *(Required)* ⚑verify
+
+### Address of automatic object must not escape — *(Required)* ⚑verify
+```cpp
+int* g;
+void f(){ int local{0}; g = &local; }   // Non-compliant: dangling
+```
+
+### Functions should not be recursive — *(Required)* ⚑verify
+
+---
 
 ## Classes & special member functions
 
-- A class that manages a resource must define/`delete` the special member
-  functions consistently (rule of 0/3/5). *(Required)* ⚑verify
-- A base class intended for polymorphic use must have a `virtual` or protected
-  non-virtual destructor. *(Required)* ⚑verify
-- Data members should be `private`. *(Advisory)* ⚑verify
-- Constructors that can take one argument should be `explicit` unless implicit
-  conversion is intended. *(Required)* ⚑verify
+### Rule of 0/3/5 — *(Required)* ⚑verify
+A class managing a resource must define (or `= delete`) destructor, copy, and move
+operations consistently; otherwise default them all.
+```cpp
+struct Bad { int* p; ~Bad(){ delete p; } };   // Non-compliant: copy = double free
+```
+
+### Polymorphic base needs virtual/protected destructor — *(Required)* ⚑verify
+```cpp
+struct Base { virtual ~Base() = default; };   // Compliant
+```
+
+### Data members should be private — *(Advisory)* ⚑verify
+
+### Single-argument constructors should be `explicit` — *(Required)* ⚑verify
+```cpp
+struct S { explicit S(int); };   // Compliant: no implicit conversions
+```
+
+---
 
 ## Derived classes & inheritance
 
-- Virtual overrides must be marked `override`. *(Required)* ⚑verify
-- Multiple inheritance from non-interface base classes should be avoided. *(Advisory)* ⚑verify
-- A virtual function's default arguments must not be redefined in overrides. *(Required)* ⚑verify
+### Mark overrides `override` — *(Required)* ⚑verify
+```cpp
+struct D : Base { void f() override; };   // Compliant
+```
+
+### Do not redefine a virtual's default arguments — *(Required)* ⚑verify
+
+### Avoid multiple inheritance of non-interface bases — *(Advisory)* ⚑verify
+
+---
 
 ## Overloading
 
-- Overloaded operators must preserve their conventional semantics. *(Required)* ⚑verify
-- `operator new`/`operator delete` must be provided/used consistently. *(Required)* ⚑verify
+### Overloaded operators keep conventional semantics — *(Required)* ⚑verify
+(e.g. `operator==` is symmetric and side-effect-free.)
+
+### Provide/replace `new`/`delete` consistently — *(Required)* ⚑verify
+
+---
 
 ## Templates
 
-- Template definitions must not depend on ill-formed constructs for any valid
-  instantiation. *(Required)* ⚑verify
-- Explicit specializations must be declared before first use. *(Required)* ⚑verify
+### A template must be valid for every allowed instantiation — *(Required)* ⚑verify
+
+### Explicit specializations declared before first use — *(Required)* ⚑verify
+
+---
 
 ## Exception handling
 
-- Exceptions thrown must be caught by an appropriate handler; unhandled
-  propagation across defined boundaries must be prevented. *(Required)* ⚑verify
-- Destructors and functions marked `noexcept` must not allow exceptions to
-  escape. *(Required)* ⚑verify
-- Exceptions should be caught by reference (usually `const &`). *(Required)* ⚑verify
-- An empty `throw;` (rethrow) must occur only within a `catch` block. *(Required)* ⚑verify
+### Do not let exceptions escape `noexcept`/destructors — *(Required)* ⚑verify
+```cpp
+~Widget() noexcept { /* must not throw */ }
+```
+
+### Catch exceptions by (const) reference — *(Required)* ⚑verify
+```cpp
+try { /*...*/ } catch (const std::exception& e) { /*...*/ }   // Compliant
+try { /*...*/ } catch (std::exception e) { }                  // Non-compliant: slicing
+```
+
+### `throw;` (rethrow) only inside a `catch` — *(Required)* ⚑verify
+
+---
 
 ## Dynamic memory & resources
 
-- Dynamic memory allocation should be constrained/avoided in favour of
-  deterministic allocation; when used, ownership must be clear (RAII / smart
-  pointers). *(Required)* ⚑verify
-- Raw owning pointers should be avoided; use `std::unique_ptr`/`std::shared_ptr`. *(Advisory)* ⚑verify
+### Constrain dynamic allocation; use RAII — *(Required)* ⚑verify
+```cpp
+auto p = std::make_unique<Widget>();   // Compliant: ownership is clear
+Widget* p = new Widget();              // Non-compliant: manual delete required
+```
+
+### Avoid raw owning pointers — *(Advisory)* ⚑verify
+
+---
 
 ## Preprocessor
 
-- Function-like macros should be replaced by inline/`constexpr` functions where
-  interchangeable. *(Advisory)* ⚑verify
-- `#include` operands must be well-formed; no `'`, `"`, `\`, `/*`, `//` in the
-  header name. *(Required)* ⚑verify
-- Macro parameters in the replacement list must be parenthesised. *(Required)* ⚑verify
+### Prefer inline/`constexpr` over function-like macros — *(Advisory)* ⚑verify
+```cpp
+#define SQ(x) ((x)*(x))                        // Non-compliant (advisory)
+constexpr int sq(int x){ return x * x; }       // Compliant
+```
+
+### Parenthesise macro parameters — *(Required)* ⚑verify
+
+### Well-formed `#include` operands — *(Required)* ⚑verify
+
+---
 
 ## Standard library usage
 
-- Deprecated/removed C++ library features must not be used. *(Required)* ⚑verify
-- C standard library facilities superseded by C++ equivalents should not be used. *(Advisory)* ⚑verify
-- Library functions must be called with valid arguments (bounds, ranges). *(Required)* ⚑verify
+### Do not use deprecated/removed library features — *(Required)* ⚑verify
+
+### Prefer C++ facilities over superseded C ones — *(Advisory)* ⚑verify
+```cpp
+std::array<int,4> a{};    // Compliant, over C array + <cstring>
+```
+
+### Call library functions with valid arguments — *(Required)* ⚑verify

@@ -7,6 +7,12 @@ bundles.
 The skill lives in [`misra-guidelines/`](misra-guidelines/). Its entry point is
 [`misra-guidelines/SKILL.md`](misra-guidelines/SKILL.md).
 
+**Installation:** see the step-by-step guide at
+[`docs/how-to-add-the-skill.html`](docs/how-to-add-the-skill.html) (open in a
+browser). In short: copy the `misra-guidelines/` folder into `~/.claude/skills/`
+(personal) or `.claude/skills/` (per-project), start a fresh session, and Claude
+loads it automatically when you ask about MISRA / C / C++ compliance.
+
 ## What it covers
 
 | Standard        | Total | Directives | Rules | Base language        |
