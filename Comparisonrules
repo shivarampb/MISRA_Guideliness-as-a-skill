@@ -1,0 +1,42 @@
+# Comprehensive C/C++ Variable Comparison Rules & Best Practices
+
+When writing robust and safety-critical C/C++ code, standard comparisons often need to be augmented with strict rules to prevent undefined behavior, precision loss, or implicit conversion bugs.
+
+## 1. Floating-Point Variables (`float`, `double`)
+*   **Rounding to Integer (User Specific Rule):** If you only care about the whole number part or a specific precision threshold, round off the `float` or `double` and convert it into a `long` (or `int`) before comparison using functions like `lround()`.
+*   **Using Epsilon:** For exact floating-point comparisons, check if the absolute difference between the two numbers is less than `FLT_EPSILON` or `DBL_EPSILON`.
+*   **Framework-Specific Epsilon:** When developing GUI or framework-driven applications, leverage built-in math utilities (e.g., `qFuzzyCompare` or `qFuzzyIsNull`) which are already optimized for precision checking.
+*   **NaN (Not a Number) Rule:** Never use `==` to check for `NaN`. By IEEE 754 definition, `NaN == NaN` evaluates to `false`. Always use `std::isnan()` or `isnan()`.
+*   **Infinity Comparisons:** `INFINITY == INFINITY` evaluates to `true`, but calculations resulting in infinity might mask underlying overflow errors. Use `std::isinf()`.
+
+## 2. Integer Variables (`int`, `short`, `long`, `long long`)
+*   **Signed vs. Unsigned Rule:** Never directly compare a signed integer with an unsigned integer. Doing so promotes the signed integer to unsigned, causing negative numbers to evaluate as huge positive numbers.
+*   **Strict Type/Essential Type Matching:** In safety-critical environments, ensure both operands share the same "essential type" category. Do not implicitly mix types (e.g., comparing a `char` directly with a `long`). Cast explicitly to a common type first.
+*   **Bitwise Masking Comparisons:** When comparing specific bits (like hardware registers or flags), wrap the bitwise operation in parentheses before the equality check: `if ((status_register & FLAG_MASK) == EXPECTED_STATE)`.
+
+## 3. Pointers and Smart Pointers
+*   **Null Checking:** In modern C++ (C++11 and later), always compare pointers against `nullptr`, never against `NULL` or `0`.
+*   **Relational Operator Constraints (`<`, `>`, `<=`, `>=`):** Only use relational operators to compare pointers if they point to elements within the *same array*. Comparing pointers from unrelated memory allocations results in undefined behavior.
+*   **Smart Pointers:** You can compare `std::unique_ptr` or `std::shared_ptr` directly to `nullptr` (e.g., `if (myPtr == nullptr)`). To compare the actual memory addresses they manage, compare them against each other, which safely checks their underlying raw pointers.
+
+## 4. Strings and Characters
+*   **C-style Strings (`char*`):** Never use `==` to compare C-strings; this only compares memory addresses. Use `strcmp()` or `strncmp()`.
+*   **C++ Strings (`std::string`):** Use standard operators (`==`, `<`, etc.). 
+*   **String Views (`std::string_view`):** In modern C++, prefer comparing a `std::string` against a `std::string_view` rather than a raw `const char*` to avoid unnecessary memory allocations.
+
+## 5. Booleans (`bool`, `_Bool`)
+*   **Direct Check Rule:** Do not compare boolean variables explicitly against `true` or `false`. Write `if (isReady)` instead of `if (isReady == true)`.
+*   **No Mathematical Comparisons:** Never use `<`, `>`, `<=`, or `>=` on boolean values.
+
+## 6. Structs, Classes, and Containers
+*   **C Structs:** You cannot use `==` to compare structs directly. Compare them member-by-member. Avoid `memcmp()` due to unpredictable compiler padding/alignment bytes.
+*   **C++ Classes:** Overload `operator==` (or use the C++20 spaceship operator `<=>`) to define exact comparison behavior.
+*   **STL Containers (`std::vector`, `std::array`, etc.):** You can use `==` to compare standard containers. It performs a size check followed by a lexicographical (element-by-element) comparison.
+
+## 7. Enumerations (`enum`)
+*   **C/C++98 Enums:** Compare directly using `==`. They decay to integers, but avoid comparing enums of different types.
+*   **C++11 Scoped Enums (`enum class`):** Strongly typed. You can compare variables of the *same* enum class using `==`. You cannot compare them to integers or other enum classes without an explicit `static_cast`.
+
+## 8. Advanced / Concurrency Contexts
+*   **Volatile Variables:** If comparing `volatile` variables (common in embedded systems), read the volatile variable into a local, non-volatile temporary variable first, then perform the comparison. Otherwise, the value could change between the load and the comparison instruction.
+*   **std::optional (C++17):** When comparing a `std::optional<T>`, you can safely compare it directly to `std::nullopt` or to a value of type `T`. If the optional is empty, comparing it to a value of `T` will return `false`.
